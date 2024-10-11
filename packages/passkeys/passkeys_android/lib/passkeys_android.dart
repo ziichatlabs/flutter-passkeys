@@ -100,4 +100,24 @@ class PasskeysAndroid extends PasskeysPlatform {
   Future<void> cancelCurrentAuthenticatorOperation() async {
     return;
   }
+
+  @override
+  Future<AuthenticateResponseType> getSavedCredential(
+    AuthenticateRequestType request,
+  ) async {
+    final r = await _api.getSavedCredential(
+      request.relyingPartyId,
+      request.challenge,
+      request.timeout,
+      request.userVerification,
+    );
+
+    return AuthenticateResponseType(
+        id: r.id,
+        rawId: r.rawId,
+        clientDataJSON: r.clientDataJSON,
+        authenticatorData: r.authenticatorData,
+        signature: r.signature,
+        userHandle: r.userHandle);
+  }
 }

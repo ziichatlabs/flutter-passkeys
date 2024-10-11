@@ -77,4 +77,33 @@ class PasskeyAuthenticator {
       }
     }
   }
+
+  /// get saved credential.
+  /// Returns [AuthenticateResponseType] which must be sent to the relying party
+  /// server.
+  Future<AuthenticateResponseType> getSavedCredential(
+    AuthenticateRequestType request,
+  ) async {
+    try {
+      await _platform.cancelCurrentAuthenticatorOperation();
+      final r = await _platform.getSavedCredential(request);
+
+      return r;
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case 'cancelled':
+          throw PasskeyAuthCancelledException();
+        case 'android-no-credential':
+          throw NoCredentialsAvailableException();
+        default:
+          if (e.code.startsWith('android-unhandled')) {
+            throw UnhandledAuthenticatorException(e.code, e.message, e.details);
+          } else if (e.code.startsWith('ios-unhandled')) {
+            throw UnhandledAuthenticatorException(e.code, e.message, e.details);
+          } else {
+            rethrow;
+          }
+      }
+    }
+  }
 }

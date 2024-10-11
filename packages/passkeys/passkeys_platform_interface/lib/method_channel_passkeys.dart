@@ -27,4 +27,11 @@ class MethodChannelPasskeys extends PasskeysPlatform {
   Future<void> goToSettings() {
     throw UnimplementedError();
   }
+
+  @override
+  Future<AuthenticateResponseType> getSavedCredential(
+      AuthenticateRequestType request,
+      ) =>
+      throw UnimplementedError();
+
 }

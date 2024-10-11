@@ -113,6 +113,16 @@ public class PasskeysPlugin: NSObject, FlutterPlugin, PasskeysApi {
             }
         }
     }
+
+    func getSavedCredential(relyingPartyId: String, challenge: String, timeout: Int64?, userVerification: String?, completion: @escaping (Result<AuthenticateResponse, Error>) -> Void) {
+        let passkeyController = PasskeyCredentialController(completion: completion)
+        passkeyController.getSavedCredential(
+            relyingPartyId: relyingPartyId,
+            challenge: challenge,
+            userVerification: userVerification,
+            completion: completion
+        )
+    }
 }
 
 open class LocalAuth: NSObject {

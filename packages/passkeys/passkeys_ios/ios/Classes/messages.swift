@@ -229,6 +229,7 @@ protocol PasskeysApi {
   func authenticate(relyingPartyId: String, challenge: String, conditionalUI: Bool, allowedCredentialIDs: [String], completion: @escaping (Result<AuthenticateResponse, Error>) -> Void)
   func cancelCurrentAuthenticatorOperation(completion: @escaping (Result<Void, Error>) -> Void)
   func goToSettings(completion: @escaping (Result<Void, Error>) -> Void)
+  func getSavedCredential(relyingPartyId: String, challenge: String, timeout: Int64?, userVerification: String?, completion: @escaping (Result<AuthenticateResponse, Error>) -> Void)
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
@@ -319,6 +320,26 @@ class PasskeysApiSetup {
       }
     } else {
       goToSettingsChannel.setMessageHandler(nil)
+    }
+    let getSavedCredentialChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.passkeys_ios.PasskeysApi.getSavedCredential", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getSavedCredentialChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let relyingPartyIdArg = args[0] as! String
+        let challengeArg = args[1] as! String
+        let timeoutArg: Int64? = isNullish(args[2]) ? nil : (args[2] is Int64? ? args[2] as! Int64? : Int64(args[2] as! Int32))
+        let userVerificationArg: String? = nilOrValue(args[3])
+        api.getSavedCredential(relyingPartyId: relyingPartyIdArg, challenge: challengeArg, timeout: timeoutArg, userVerification: userVerificationArg) { result in
+          switch result {
+            case .success(let res):
+              reply(wrapResult(res))
+            case .failure(let error):
+              reply(wrapError(error))
+          }
+        }
+      }
+    } else {
+      getSavedCredentialChannel.setMessageHandler(nil)
     }
   }
 }
