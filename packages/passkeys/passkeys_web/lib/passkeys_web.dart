@@ -108,4 +108,10 @@ class PasskeysWeb extends PasskeysPlatform {
   Future<void> goToSettings() {
     throw UnimplementedError();
   }
+
+  @override
+  Future<AuthenticateResponseType> getSavedCredential(AuthenticateRequestType request) {
+    // TODO: implement getSavedCredential
+    throw UnimplementedError();
+  }
 }

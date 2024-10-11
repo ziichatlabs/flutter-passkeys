@@ -108,4 +108,12 @@ abstract class PasskeysApi {
 
   @async
   void goToSettings();
+
+  @async
+  AuthenticateResponse getSavedCredential(
+      String relyingPartyId,
+      String challenge,
+      int? timeout,
+      String? userVerification,
+  );
 }
