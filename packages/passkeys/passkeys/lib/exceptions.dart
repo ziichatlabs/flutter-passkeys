@@ -10,7 +10,16 @@ class AuthenticatorException implements Exception {}
 /// - allow the user to start the flow again.
 class PasskeyAuthCancelledException implements AuthenticatorException {
   /// Constructor
-  PasskeyAuthCancelledException();
+  PasskeyAuthCancelledException(this.code, this.message, this.details);
+
+  final String code;
+  final String? message;
+  final dynamic details;
+
+  @override
+  String toString() {
+    return 'PasskeyAuthCancelledException (code: $code, message: $message, details: $details}';
+  }
 }
 
 /// This exception is thrown when the user tries to login but is not logged in

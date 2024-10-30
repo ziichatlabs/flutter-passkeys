@@ -36,7 +36,7 @@ class PasskeyAuthenticator {
     } on PlatformException catch (e) {
       switch (e.code) {
         case 'cancelled':
-          throw PasskeyAuthCancelledException();
+          throw PasskeyAuthCancelledException(e.code, e.message, e.details);
         case 'exclude-credentials-match':
           throw ExcludeCredentialsCanNotBeRegisteredException();
         case 'android-missing-google-sign-in':
@@ -63,7 +63,7 @@ class PasskeyAuthenticator {
     } on PlatformException catch (e) {
       switch (e.code) {
         case 'cancelled':
-          throw PasskeyAuthCancelledException();
+          throw PasskeyAuthCancelledException(e.code, e.message, e.details);
         case 'android-no-credential':
           throw NoCredentialsAvailableException();
         default:
@@ -92,7 +92,7 @@ class PasskeyAuthenticator {
     } on PlatformException catch (e) {
       switch (e.code) {
         case 'cancelled':
-          throw PasskeyAuthCancelledException();
+          throw PasskeyAuthCancelledException(e.code, e.message, e.details);
         case 'android-no-credential':
           throw NoCredentialsAvailableException();
         default:
