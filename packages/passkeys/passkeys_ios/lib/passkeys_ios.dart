@@ -72,4 +72,29 @@ class PasskeysIOS extends PasskeysPlatform {
   @override
   Future<void> cancelCurrentAuthenticatorOperation() =>
       _api.cancelCurrentAuthenticatorOperation();
+
+  @override
+  Future<void> goToSettings() async {
+    await _api.goToSettings();
+  }
+
+  @override
+  Future<AuthenticateResponseType> getSavedCredential(
+    AuthenticateRequestType request,
+  ) async {
+    final r = await _api.getSavedCredential(
+      request.relyingPartyId,
+      request.challenge,
+      request.timeout,
+      request.userVerification,
+    );
+
+    return AuthenticateResponseType(
+        id: r.id,
+        rawId: r.rawId,
+        clientDataJSON: r.clientDataJSON,
+        authenticatorData: r.authenticatorData,
+        signature: r.signature,
+        userHandle: r.userHandle);
+  }
 }

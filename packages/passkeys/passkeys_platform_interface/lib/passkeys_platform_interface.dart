@@ -48,4 +48,12 @@ abstract class PasskeysPlatform extends PlatformInterface {
   /// This is important for the case when conditional UI has been started but
   /// the user decides ignore that and login by typing his username instead.
   Future<void> cancelCurrentAuthenticatorOperation();
+
+  /// Get saved credential
+  Future<AuthenticateResponseType> getSavedCredential(
+      AuthenticateRequestType request,
+  );
+
+  /// Go to Setting
+  Future<void> goToSettings();
 }

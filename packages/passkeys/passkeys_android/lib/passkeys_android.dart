@@ -48,6 +48,11 @@ class PasskeysAndroid extends PasskeysPlatform {
   }
 
   @override
+  Future<void> goToSettings() async {
+    await _api.goToSettings();
+  }
+
+  @override
   Future<RegisterResponseType> register(RegisterRequestType request) async {
     final userArg = User(
       displayName: request.user.displayName,
@@ -94,5 +99,25 @@ class PasskeysAndroid extends PasskeysPlatform {
   @override
   Future<void> cancelCurrentAuthenticatorOperation() async {
     return;
+  }
+
+  @override
+  Future<AuthenticateResponseType> getSavedCredential(
+    AuthenticateRequestType request,
+  ) async {
+    final r = await _api.getSavedCredential(
+      request.relyingPartyId,
+      request.challenge,
+      request.timeout,
+      request.userVerification,
+    );
+
+    return AuthenticateResponseType(
+        id: r.id,
+        rawId: r.rawId,
+        clientDataJSON: r.clientDataJSON,
+        authenticatorData: r.authenticatorData,
+        signature: r.signature,
+        userHandle: r.userHandle);
   }
 }

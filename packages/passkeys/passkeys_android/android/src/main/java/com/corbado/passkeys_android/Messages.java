@@ -1035,6 +1035,10 @@ public class Messages {
 
     void cancelCurrentAuthenticatorOperation(@NonNull Result<Void> result);
 
+    void goToSettings(@NonNull Result<Void> result);
+
+    void getSavedCredential(@NonNull String relyingPartyId, @NonNull String challenge, @Nullable Long timeout, @Nullable String userVerification, @NonNull Result<AuthenticateResponse> result);
+
     /** The codec used by PasskeysApi. */
     static @NonNull MessageCodec<Object> getCodec() {
       return PasskeysApiCodec.INSTANCE;
@@ -1159,6 +1163,65 @@ public class Messages {
                     };
 
                 api.cancelCurrentAuthenticatorOperation(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.passkeys_android.PasskeysApi.goToSettings", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<Void> resultCallback =
+                    new Result<Void>() {
+                      public void success(Void result) {
+                        wrapped.add(0, null);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.goToSettings(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.passkeys_android.PasskeysApi.getSavedCredential", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                String relyingPartyIdArg = (String) args.get(0);
+                String challengeArg = (String) args.get(1);
+                Number timeoutArg = (Number) args.get(2);
+                String userVerificationArg = (String) args.get(3);
+                Result<AuthenticateResponse> resultCallback =
+                    new Result<AuthenticateResponse>() {
+                      public void success(AuthenticateResponse result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.getSavedCredential(relyingPartyIdArg, challengeArg, (timeoutArg == null) ? null : timeoutArg.longValue(), userVerificationArg, resultCallback);
               });
         } else {
           channel.setMessageHandler(null);
