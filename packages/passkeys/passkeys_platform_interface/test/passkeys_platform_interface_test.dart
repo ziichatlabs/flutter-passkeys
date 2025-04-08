@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:passkeys_platform_interface/passkeys_platform_interface.dart';
-import 'package:passkeys_platform_interface/types/availability.dart';
 import 'package:passkeys_platform_interface/types/types.dart';
 
 class PasskeysMock extends PasskeysPlatform {
@@ -30,7 +29,8 @@ class PasskeysMock extends PasskeysPlatform {
   }
 
   @override
-  Future<AuthenticateResponseType> getSavedCredential(AuthenticateRequestType request) {
+  Future<AuthenticateResponseType> getSavedCredential(
+      AuthenticateRequestType request) {
     throw UnimplementedError();
   }
 

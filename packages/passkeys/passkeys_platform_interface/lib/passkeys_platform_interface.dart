@@ -1,5 +1,4 @@
 import 'package:passkeys_platform_interface/method_channel_passkeys.dart';
-import 'package:passkeys_platform_interface/types/availability.dart';
 import 'package:passkeys_platform_interface/types/types.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -56,7 +55,7 @@ abstract class PasskeysPlatform extends PlatformInterface {
 
   /// Get saved credential
   Future<AuthenticateResponseType> getSavedCredential(
-      AuthenticateRequestType request,
+    AuthenticateRequestType request,
   );
 
   /// Go to Setting

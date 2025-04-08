@@ -1,5 +1,4 @@
 import 'package:passkeys_platform_interface/passkeys_platform_interface.dart';
-import 'package:passkeys_platform_interface/types/availability.dart';
 import 'package:passkeys_platform_interface/types/types.dart';
 
 /// An implementation of [PasskeysPlatform] that uses method channels.
@@ -34,8 +33,7 @@ class MethodChannelPasskeys extends PasskeysPlatform {
 
   @override
   Future<AuthenticateResponseType> getSavedCredential(
-      AuthenticateRequestType request,
-      ) =>
+    AuthenticateRequestType request,
+  ) =>
       throw UnimplementedError();
-
 }
