@@ -30,7 +30,7 @@ PasskeyLoginPublicKey _$PasskeyLoginPublicKeyFromJson(
         Map<String, dynamic> json) =>
     PasskeyLoginPublicKey(
       challenge: json['challenge'] as String,
-      timeout: json['timeout'] as int?,
+      timeout: (json['timeout'] as num?)?.toInt(),
       rpId: json['rpId'] as String?,
       allowCredentials: (json['allowCredentials'] as List<dynamic>?)
           ?.map((e) => PasskeyLoginAllowCredentialType.fromJson(
@@ -84,7 +84,11 @@ Map<String, dynamic> _$PasskeyLoginAllowCredentialTypeToJson(
     };
 
 const _$AuthenticatorTransportEnumMap = {
+  AuthenticatorTransport.Hybrid: 'hybrid',
   AuthenticatorTransport.Internal: 'internal',
+  AuthenticatorTransport.Nfc: 'nfc',
+  AuthenticatorTransport.Usb: 'usb',
+  AuthenticatorTransport.Bluetooth: 'bluetooth',
 };
 
 LoginExtensions _$LoginExtensionsFromJson(Map<String, dynamic> json) =>

@@ -64,6 +64,37 @@ struct RelyingParty {
   }
 }
 
+/// Represents a credential
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct CredentialType {
+  /// The type of the credential.
+  var type: String
+  /// The ID of the credential.
+  var id: String
+  /// The transports of the credential.
+  var transports: [String?]
+
+  static func fromList(_ list: [Any?]) -> CredentialType? {
+    let type = list[0] as! String
+    let id = list[1] as! String
+    let transports = list[2] as! [String?]
+
+    return CredentialType(
+      type: type,
+      id: id,
+      transports: transports
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      type,
+      id,
+      transports,
+    ]
+  }
+}
+
 /// Represents a user
 ///
 /// Generated class from Pigeon that represents data sent in messages.
@@ -102,18 +133,22 @@ struct RegisterResponse {
   var clientDataJSON: String
   /// The attestation object
   var attestationObject: String
+  /// The supported transports for the authenticator
+  var transports: [String?]
 
   static func fromList(_ list: [Any?]) -> RegisterResponse? {
     let id = list[0] as! String
     let rawId = list[1] as! String
     let clientDataJSON = list[2] as! String
     let attestationObject = list[3] as! String
+    let transports = list[4] as! [String?]
 
     return RegisterResponse(
       id: id,
       rawId: rawId,
       clientDataJSON: clientDataJSON,
-      attestationObject: attestationObject
+      attestationObject: attestationObject,
+      transports: transports
     )
   }
   func toList() -> [Any?] {
@@ -122,6 +157,7 @@ struct RegisterResponse {
       rawId,
       clientDataJSON,
       attestationObject,
+      transports,
     ]
   }
 }
@@ -177,10 +213,12 @@ private class PasskeysApiCodecReader: FlutterStandardReader {
       case 128:
         return AuthenticateResponse.fromList(self.readValue() as! [Any?])
       case 129:
-        return RegisterResponse.fromList(self.readValue() as! [Any?])
+        return CredentialType.fromList(self.readValue() as! [Any?])
       case 130:
-        return RelyingParty.fromList(self.readValue() as! [Any?])
+        return RegisterResponse.fromList(self.readValue() as! [Any?])
       case 131:
+        return RelyingParty.fromList(self.readValue() as! [Any?])
+      case 132:
         return User.fromList(self.readValue() as! [Any?])
       default:
         return super.readValue(ofType: type)
@@ -193,14 +231,17 @@ private class PasskeysApiCodecWriter: FlutterStandardWriter {
     if let value = value as? AuthenticateResponse {
       super.writeByte(128)
       super.writeValue(value.toList())
-    } else if let value = value as? RegisterResponse {
+    } else if let value = value as? CredentialType {
       super.writeByte(129)
       super.writeValue(value.toList())
-    } else if let value = value as? RelyingParty {
+    } else if let value = value as? RegisterResponse {
       super.writeByte(130)
       super.writeValue(value.toList())
-    } else if let value = value as? User {
+    } else if let value = value as? RelyingParty {
       super.writeByte(131)
+      super.writeValue(value.toList())
+    } else if let value = value as? User {
+      super.writeByte(132)
       super.writeValue(value.toList())
     } else {
       super.writeValue(value)
@@ -225,8 +266,9 @@ class PasskeysApiCodec: FlutterStandardMessageCodec {
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
 protocol PasskeysApi {
   func canAuthenticate() throws -> Bool
-  func register(challenge: String, relyingParty: RelyingParty, user: User, excludeCredentialIDs: [String], completion: @escaping (Result<RegisterResponse, Error>) -> Void)
-  func authenticate(relyingPartyId: String, challenge: String, conditionalUI: Bool, allowedCredentialIDs: [String], completion: @escaping (Result<AuthenticateResponse, Error>) -> Void)
+  func hasBiometrics() throws -> Bool
+  func register(challenge: String, relyingParty: RelyingParty, user: User, excludeCredentials: [CredentialType], pubKeyCredValues: [Int64], canBePlatformAuthenticator: Bool, canBeSecurityKey: Bool, completion: @escaping (Result<RegisterResponse, Error>) -> Void)
+  func authenticate(relyingPartyId: String, challenge: String, conditionalUI: Bool, allowedCredentials: [CredentialType], preferImmediatelyAvailableCredentials: Bool, completion: @escaping (Result<AuthenticateResponse, Error>) -> Void)
   func cancelCurrentAuthenticatorOperation(completion: @escaping (Result<Void, Error>) -> Void)
   func goToSettings(completion: @escaping (Result<Void, Error>) -> Void)
   func getSavedCredential(relyingPartyId: String, challenge: String, timeout: Int64?, userVerification: String?, completion: @escaping (Result<AuthenticateResponse, Error>) -> Void)
@@ -251,6 +293,19 @@ class PasskeysApiSetup {
     } else {
       canAuthenticateChannel.setMessageHandler(nil)
     }
+    let hasBiometricsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.passkeys_ios.PasskeysApi.hasBiometrics", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      hasBiometricsChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.hasBiometrics()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      hasBiometricsChannel.setMessageHandler(nil)
+    }
     let registerChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.passkeys_ios.PasskeysApi.register", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       registerChannel.setMessageHandler { message, reply in
@@ -258,8 +313,11 @@ class PasskeysApiSetup {
         let challengeArg = args[0] as! String
         let relyingPartyArg = args[1] as! RelyingParty
         let userArg = args[2] as! User
-        let excludeCredentialIDsArg = args[3] as! [String]
-        api.register(challenge: challengeArg, relyingParty: relyingPartyArg, user: userArg, excludeCredentialIDs: excludeCredentialIDsArg) { result in
+        let excludeCredentialsArg = args[3] as! [CredentialType]
+        let pubKeyCredValuesArg = args[4] as! [Int64]
+        let canBePlatformAuthenticatorArg = args[5] as! Bool
+        let canBeSecurityKeyArg = args[6] as! Bool
+        api.register(challenge: challengeArg, relyingParty: relyingPartyArg, user: userArg, excludeCredentials: excludeCredentialsArg, pubKeyCredValues: pubKeyCredValuesArg, canBePlatformAuthenticator: canBePlatformAuthenticatorArg, canBeSecurityKey: canBeSecurityKeyArg) { result in
           switch result {
             case .success(let res):
               reply(wrapResult(res))
@@ -278,8 +336,9 @@ class PasskeysApiSetup {
         let relyingPartyIdArg = args[0] as! String
         let challengeArg = args[1] as! String
         let conditionalUIArg = args[2] as! Bool
-        let allowedCredentialIDsArg = args[3] as! [String]
-        api.authenticate(relyingPartyId: relyingPartyIdArg, challenge: challengeArg, conditionalUI: conditionalUIArg, allowedCredentialIDs: allowedCredentialIDsArg) { result in
+        let allowedCredentialsArg = args[3] as! [CredentialType]
+        let preferImmediatelyAvailableCredentialsArg = args[4] as! Bool
+        api.authenticate(relyingPartyId: relyingPartyIdArg, challenge: challengeArg, conditionalUI: conditionalUIArg, allowedCredentials: allowedCredentialsArg, preferImmediatelyAvailableCredentials: preferImmediatelyAvailableCredentialsArg) { result in
           switch result {
             case .success(let res):
               reply(wrapResult(res))

@@ -527,16 +527,13 @@ public class Messages {
    */
   public static final class AuthenticatorSelection {
     /** The authenticator attachment */
-    private @NonNull String authenticatorAttachment;
+    private @Nullable String authenticatorAttachment;
 
-    public @NonNull String getAuthenticatorAttachment() {
+    public @Nullable String getAuthenticatorAttachment() {
       return authenticatorAttachment;
     }
 
-    public void setAuthenticatorAttachment(@NonNull String setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"authenticatorAttachment\" is null.");
-      }
+    public void setAuthenticatorAttachment(@Nullable String setterArg) {
       this.authenticatorAttachment = setterArg;
     }
 
@@ -589,7 +586,7 @@ public class Messages {
 
       private @Nullable String authenticatorAttachment;
 
-      public @NonNull Builder setAuthenticatorAttachment(@NonNull String setterArg) {
+      public @NonNull Builder setAuthenticatorAttachment(@Nullable String setterArg) {
         this.authenticatorAttachment = setterArg;
         return this;
       }
@@ -711,6 +708,20 @@ public class Messages {
       this.attestationObject = setterArg;
     }
 
+    /** The supported transports for the authenticator */
+    private @NonNull List<String> transports;
+
+    public @NonNull List<String> getTransports() {
+      return transports;
+    }
+
+    public void setTransports(@NonNull List<String> setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"transports\" is null.");
+      }
+      this.transports = setterArg;
+    }
+
     /** Constructor is non-public to enforce null safety; use Builder. */
     RegisterResponse() {}
 
@@ -744,23 +755,32 @@ public class Messages {
         return this;
       }
 
+      private @Nullable List<String> transports;
+
+      public @NonNull Builder setTransports(@NonNull List<String> setterArg) {
+        this.transports = setterArg;
+        return this;
+      }
+
       public @NonNull RegisterResponse build() {
         RegisterResponse pigeonReturn = new RegisterResponse();
         pigeonReturn.setId(id);
         pigeonReturn.setRawId(rawId);
         pigeonReturn.setClientDataJSON(clientDataJSON);
         pigeonReturn.setAttestationObject(attestationObject);
+        pigeonReturn.setTransports(transports);
         return pigeonReturn;
       }
     }
 
     @NonNull
     ArrayList<Object> toList() {
-      ArrayList<Object> toListResult = new ArrayList<Object>(4);
+      ArrayList<Object> toListResult = new ArrayList<Object>(5);
       toListResult.add(id);
       toListResult.add(rawId);
       toListResult.add(clientDataJSON);
       toListResult.add(attestationObject);
+      toListResult.add(transports);
       return toListResult;
     }
 
@@ -774,6 +794,8 @@ public class Messages {
       pigeonResult.setClientDataJSON((String) clientDataJSON);
       Object attestationObject = list.get(3);
       pigeonResult.setAttestationObject((String) attestationObject);
+      Object transports = list.get(4);
+      pigeonResult.setTransports((List<String>) transports);
       return pigeonResult;
     }
   }
@@ -1031,7 +1053,7 @@ public class Messages {
 
     void register(@NonNull String challenge, @NonNull RelyingParty relyingParty, @NonNull User user, @NonNull AuthenticatorSelection authenticatorSelection, @Nullable List<PubKeyCredParam> pubKeyCredParams, @Nullable Long timeout, @Nullable String attestation, @NonNull List<ExcludeCredential> excludeCredentials, @NonNull Result<RegisterResponse> result);
 
-    void authenticate(@NonNull String relyingPartyId, @NonNull String challenge, @Nullable Long timeout, @Nullable String userVerification, @Nullable List<AllowCredential> allowCredentials, @NonNull Result<AuthenticateResponse> result);
+    void authenticate(@NonNull String relyingPartyId, @NonNull String challenge, @Nullable Long timeout, @Nullable String userVerification, @Nullable List<AllowCredential> allowCredentials, @Nullable Boolean preferImmediatelyAvailableCredentials, @NonNull Result<AuthenticateResponse> result);
 
     void cancelCurrentAuthenticatorOperation(@NonNull Result<Void> result);
 
@@ -1122,6 +1144,7 @@ public class Messages {
                 Number timeoutArg = (Number) args.get(2);
                 String userVerificationArg = (String) args.get(3);
                 List<AllowCredential> allowCredentialsArg = (List<AllowCredential>) args.get(4);
+                Boolean preferImmediatelyAvailableCredentialsArg = (Boolean) args.get(5);
                 Result<AuthenticateResponse> resultCallback =
                     new Result<AuthenticateResponse>() {
                       public void success(AuthenticateResponse result) {
@@ -1135,7 +1158,7 @@ public class Messages {
                       }
                     };
 
-                api.authenticate(relyingPartyIdArg, challengeArg, (timeoutArg == null) ? null : timeoutArg.longValue(), userVerificationArg, allowCredentialsArg, resultCallback);
+                api.authenticate(relyingPartyIdArg, challengeArg, (timeoutArg == null) ? null : timeoutArg.longValue(), userVerificationArg, allowCredentialsArg, preferImmediatelyAvailableCredentialsArg, resultCallback);
               });
         } else {
           channel.setMessageHandler(null);

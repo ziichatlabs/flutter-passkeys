@@ -15,6 +15,7 @@ class ProfilePage extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
+            key: Key('welcome-text'),
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: Text(
               'Welcome',
@@ -37,13 +38,14 @@ class ProfilePage extends ConsumerWidget {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Text(
-              'You are currently logged in. You have a JWT token that you can use to make calls to your backend.',
+              'You are currently logged in. You can log out and log back in using a passkey.',
               style: TextStyle(
                 fontSize: 20,
               ),
             ),
           ),
           SizedBox(
+            key: Key('sign-out-button'),
             width: double.infinity,
             height: 50,
             child: OutlinedButton(

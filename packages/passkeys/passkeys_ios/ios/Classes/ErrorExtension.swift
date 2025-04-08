@@ -11,7 +11,11 @@ extension FlutterError: Error {
             code = "unknown"
             break
         case ASAuthorizationError.canceled:
-            code = "cancelled"
+            if (error.localizedDescription.contains("No credentials available for login.")) {
+                code = "no-credentials-available"
+            } else {
+                code = "cancelled"
+            }
             break
         case ASAuthorizationError.invalidResponse:
             code = "invalidResponse"
@@ -38,6 +42,9 @@ extension FlutterError: Error {
         var code = ""
         if (error.domain == "WKErrorDomain" && error.code == 8) {
             code = "exclude-credentials-match"
+        }else if(error.domain == "WKErrorDomain" && error.code == 31){
+            // This error happens when the security key prompt times out (2 minutes)
+            code = "ios-security-key-timeout"
         } else {
             code = "ios-unhandled-" + error.domain
         }
@@ -51,6 +58,7 @@ extension FlutterError: Error {
 }
 
 enum CustomErrors: Error {
+    case deviceNotSupported
     case decodingChallenge
     case decodingUserId
     case unexpectedAuthorizationResponse

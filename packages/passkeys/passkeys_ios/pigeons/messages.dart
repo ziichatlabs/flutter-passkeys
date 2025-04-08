@@ -18,6 +18,25 @@ class RelyingParty {
   final String id;
 }
 
+/// Represents a credential
+class CredentialType {
+  /// Constructor
+  const CredentialType({
+    required this.type,
+    required this.id,
+    required this.transports,
+  });
+
+  /// The type of the credential.
+  final String type;
+
+  /// The ID of the credential.
+  final String id;
+
+  /// The transports of the credential.
+  final List<String?> transports;
+}
+
 /// Represents a user
 class User {
   /// Constructor
@@ -38,6 +57,7 @@ class RegisterResponse {
     required this.rawId,
     required this.clientDataJSON,
     required this.attestationObject,
+    required this.transports,
   });
 
   /// The ID
@@ -51,6 +71,9 @@ class RegisterResponse {
 
   /// The attestation object
   final String attestationObject;
+
+  /// The supported transports for the authenticator
+  final List<String?> transports;
 }
 
 /// Represents an authenticate response
@@ -87,12 +110,17 @@ class AuthenticateResponse {
 abstract class PasskeysApi {
   bool canAuthenticate();
 
+  bool hasBiometrics();
+
   @async
   RegisterResponse register(
     String challenge,
     RelyingParty relyingParty,
     User user,
-    List<String> excludeCredentialIDs,
+    List<CredentialType> excludeCredentials,
+    List<int> pubKeyCredValues,
+    bool canBePlatformAuthenticator,
+    bool canBeSecurityKey,
   );
 
   @async
@@ -100,7 +128,8 @@ abstract class PasskeysApi {
     String relyingPartyId,
     String challenge,
     bool conditionalUI,
-    List<String> allowedCredentialIDs,
+    List<CredentialType> allowedCredentials,
+    bool preferImmediatelyAvailableCredentials,
   );
 
   @async

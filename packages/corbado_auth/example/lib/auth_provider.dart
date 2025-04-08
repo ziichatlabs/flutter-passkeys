@@ -1,18 +1,10 @@
 import 'package:corbado_auth/corbado_auth.dart';
-import 'package:corbado_auth_example/auth_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Corbado SDK provider. This will be used by other providers to
 // e.g. expose user state.
 final corbadoProvider = Provider<CorbadoAuth>(
     (ref) => throw UnimplementedError("no instance of corbadoAuth"));
-
-// Make the authentication service available throughout the app.
-final authServiceProvider = Provider<AuthService>((ref) {
-  final corbado = ref.watch(corbadoProvider);
-
-  return AuthService(corbado);
-});
 
 // Make the user available throughout the app.
 final userProvider = StreamProvider<User?>((ref) async* {
@@ -26,6 +18,14 @@ final userProvider = StreamProvider<User?>((ref) async* {
 final authStateProvider = StreamProvider((ref) async* {
   final corbado = ref.watch(corbadoProvider);
   await for (final value in corbado.authStateChanges) {
+    yield value;
+  }
+});
+
+// Make the passkeys available throughout the app.
+final passkeysProvider = StreamProvider<List<PasskeyInfo>>((ref) async* {
+  final corbado = ref.watch(corbadoProvider);
+  await for (final value in corbado.passkeysChanges) {
     yield value;
   }
 });

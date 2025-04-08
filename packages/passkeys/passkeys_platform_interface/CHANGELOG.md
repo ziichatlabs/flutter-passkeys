@@ -1,3 +1,20 @@
+## 2.3.1
+* Fixed Exception when trying to register while `authenticatorAttachment` is null on Safari or IOS device.
+
+## 2.3.0
+* Added `transports` to RegistrationResponse
+
+## 2.2.1
+* Fixes bug with new added types
+
+## 2.2.0
+* Added `hasPasskeySupport` to `AvailabilityType`
+* Separate `AvailabilityType` for each supported platform
+
+## 2.1.0
+* Added getAvailability().
+* Added preferImmediatelyAvailableCredentials.
+
 ## 2.0.1
 * Added excludeCredentials to RegisterRequestType
 

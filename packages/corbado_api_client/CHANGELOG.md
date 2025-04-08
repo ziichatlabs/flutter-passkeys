@@ -1,3 +1,9 @@
+## 2.1.0
+* Added `X-Corbado-SDK` header to all requests.
+
+## 2.0.0
+* Changed to FrontendAPI v2.
+
 ## 1.1.1
 
 * Bump dependency versions (intl, meta, http).

@@ -1,4 +1,5 @@
 import 'package:passkeys_platform_interface/method_channel_passkeys.dart';
+import 'package:passkeys_platform_interface/types/availability.dart';
 import 'package:passkeys_platform_interface/types/types.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -30,7 +31,11 @@ abstract class PasskeysPlatform extends PlatformInterface {
   }
 
   /// Returns true if passkeys are supported by the device
-  Future<bool> canAuthenticate();
+  /// We have deprecated this function (it will now always return true).
+  @deprecated
+  Future<bool> canAuthenticate() async {
+    return true;
+  }
 
   /// Handles the platform-specific steps for the registration flow
   /// (see https://webauthn.guide/#registration)
@@ -56,4 +61,8 @@ abstract class PasskeysPlatform extends PlatformInterface {
 
   /// Go to Setting
   Future<void> goToSettings();
+
+  /// Retrieves the availability information for passkeys, user-verifying platform authenticators,
+  /// and conditional mediation whenever possible
+  Future<AvailabilityType> getAvailability();
 }
