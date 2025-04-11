@@ -1,23 +1,30 @@
 import 'dart:async';
 
 import 'package:corbado_auth/corbado_auth.dart';
+import 'package:corbado_auth/src/blocks/types.dart';
 import 'package:corbado_auth/src/services/storage/storage.dart';
-import 'package:corbado_frontend_api_client/frontendapi/lib/api.dart';
+import 'package:corbado_frontend_api_client/corbado_frontend_api_client.dart';
 import 'package:flutter/foundation.dart';
 
 class SessionService {
   final StorageService _storageService;
-  final ApiClient frontendAPIClient;
+  final CorbadoFrontendApiClient frontendAPIClient;
 
   Stream<User?> get userChanges => _userStreamController.stream;
 
   Stream<AuthState> get authStateChanges => _authStateStreamController.stream;
+
+  Stream<String?> get rpIdChanges => _rpIdStreamController.stream;
 
   final StreamController<User?> _userStreamController =
       StreamController<User?>();
 
   final StreamController<AuthState> _authStateStreamController =
       StreamController<AuthState>();
+
+  final StreamController<String?> _rpIdStreamController =
+  StreamController<String?>();
+
   final _preemptiveRefreshDuration = const Duration(seconds: 60);
   Timer? _refreshTimer;
 
@@ -31,13 +38,19 @@ class SessionService {
       return null;
     }
 
-    // if token is invalid we try to refresh it
+    final refreshToken = await getRefreshToken();
+
     if (!user.hasValidToken()) {
       return null;
     }
 
+    if (refreshToken != null) {
+      frontendAPIClient.dio.options.headers['Authorization'] =
+          'Bearer $refreshToken';
+    }
+
     // if token is valid we schedule a refresh
-    _scheduleRefreshRoutine(user);
+    _scheduleRefreshRoutine();
     _userStreamController.add(user);
     _authStateStreamController.add(AuthState.SignedIn);
 
@@ -48,25 +61,40 @@ class SessionService {
     return _storageService.getRefreshToken();
   }
 
-  Future<void> setRefreshToken(User user, String value) async {
-    await _storageService.setRefreshToken(value);
-    _scheduleRefreshRoutine(user);
+  Future<void> setRefreshToken(String? value) async {
+    if (value != null) {
+      frontendAPIClient.dio.options.headers['Authorization'] = 'Bearer $value';
+      await _storageService.setRefreshToken(value);
+    }
+
+    _scheduleRefreshRoutine();
   }
 
   Future<User?> getUser() {
     return _storageService.getUser();
   }
 
-  Future<void> setUser(User value, {bool askForPasskeyAppend = false}) {
+  Future<void> setUser(User value) {
     _userStreamController.add(value);
-
-    final authState = askForPasskeyAppend
-        ? AuthState.AskForPasskeyAppend
-        : AuthState.SignedIn;
-
-    _authStateStreamController.add(authState);
+    _authStateStreamController.add(AuthState.SignedIn);
 
     return _storageService.setUser(value);
+  }
+
+  Future<String?> getFrontEndApiUrl() {
+    return _storageService.getFrontEndApiUrl();
+  }
+
+  Future<void> setFrontEndApiUrl(String? value) async {
+    if (value != null) {
+      frontendAPIClient.dio.options.baseUrl = value;
+
+      _rpIdStreamController.add(value);
+
+      return _storageService.setFrontEndApiUrl(value);
+    }
+
+    return;
   }
 
   Future<void> signOut() async {
@@ -78,7 +106,7 @@ class SessionService {
 
   Future<void> explicitlyTriggerTokenRefresh() => _refreshToken();
 
-  void _scheduleRefreshRoutine(User user) {
+  void _scheduleRefreshRoutine() {
     // if another refresh has already been scheduled we stop that one
     // this is not expected => if it occurs there is a problem with the code
     if (_refreshTimer != null && _refreshTimer!.isActive) {
@@ -119,29 +147,25 @@ class SessionService {
       // for web, setting the Authorization header is optional because there
       // can be a HTTPOnly cookie set
       if (refreshToken != null) {
-        frontendAPIClient.addDefaultHeader(
-          'Authorization',
-          'Bearer $refreshToken',
-        );
+        frontendAPIClient.dio.options.headers['Authorization'] =
+            'Bearer $refreshToken';
       }
     } else {
       if (refreshToken == null) {
         throw Exception('Stopped token refresh: missing refreshToken.');
       }
 
-      frontendAPIClient.addDefaultHeader(
-        'cookie',
-        'cbo_long_session=$refreshToken',
-      );
+      frontendAPIClient.dio.options.headers['Authorization'] =
+          'Bearer $refreshToken';
     }
 
     final response =
-        await SessionsApi(frontendAPIClient).sessionRefresh(EmptyReq());
-    if (response == null || response.shortSession == null) {
-      throw Exception('Stopped refreshToken: missing token in response.');
+        await frontendAPIClient.getUsersApi().currentUserSessionRefresh();
+    if (response.data == null) {
+      throw CorbadoError.fromMissingServerResponse();
     }
 
-    final user = User.fromIdToken(response.shortSession!.value);
+    final user = User.fromIdToken(response.data!.shortSession);
     await setUser(user);
 
     return user;

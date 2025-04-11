@@ -29,9 +29,13 @@ class PasskeysMock extends PasskeysPlatform {
   }
 
   @override
-  Future<AuthenticateResponseType> getSavedCredential(AuthenticateRequestType request) {
+  Future<AuthenticateResponseType> getSavedCredential(
+      AuthenticateRequestType request) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<AvailabilityType> getAvailability() => throw UnimplementedError();
 }
 
 void main() {

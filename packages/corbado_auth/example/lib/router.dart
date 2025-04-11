@@ -1,18 +1,18 @@
 import 'package:corbado_auth/corbado_auth.dart';
 import 'package:corbado_auth_example/auth_provider.dart';
+import 'package:corbado_auth_example/pages/auth_page.dart';
+import 'package:corbado_auth_example/pages/edit_profile_page.dart';
+import 'package:corbado_auth_example/pages/passkey_list_page.dart';
 import 'package:corbado_auth_example/pages/profile_page.dart';
-import 'package:corbado_auth_example/pages/sign_in_page.dart';
-import 'package:corbado_auth_example/pages/sign_up_page.dart';
-import 'package:corbado_auth_example/pages/tokendetails_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class Routes {
-  static const signUp = '/sign-up';
-  static const signIn = '/sign-in';
+  static const auth = '/auth';
   static const profile = '/profile';
-  static const tokenDetails = '/tokendetails';
+  static const editProfile = '/edit-profile';
+  static const passkeyList = '/passkey-list';
 }
 
 GoRoute _defaultTransitionGoRoute({
@@ -48,29 +48,28 @@ final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
 
   return GoRouter(
-      initialLocation: Routes.signUp,
+      initialLocation: Routes.auth,
       routes: [
         _defaultTransitionGoRoute(
-          path: Routes.signUp,
-          builder: (context, state) => SignUpPage(),
-        ),
-        _defaultTransitionGoRoute(
-          path: Routes.signIn,
-          builder: (context, state) => SignInPage(),
+          path: Routes.auth,
+          builder: (context, state) => AuthPage(),
         ),
         _defaultTransitionGoRoute(
           path: Routes.profile,
           builder: (context, state) => ProfilePage(),
         ),
         _defaultTransitionGoRoute(
-          path: Routes.tokenDetails,
-          builder: (context, state) => TokenDetailsPage(),
+          path: Routes.editProfile,
+          builder: (context, state) => EditProfilePage(),
+        ),
+        _defaultTransitionGoRoute(
+          path: Routes.passkeyList,
+          builder: (context, state) => PasskeyListPage(),
         ),
       ],
       redirect: (BuildContext context, GoRouterState state) {
         final onLoggedOutRoutes = [
-          Routes.signIn,
-          Routes.signUp,
+          Routes.auth,
         ].contains(state.fullPath);
 
         if (authState.value == null) {
@@ -82,19 +81,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             // if the user is not logged in but currently on a page that should
             // only be visible for logged in users => redirect to signIn page.
             if (!onLoggedOutRoutes) {
-              return Routes.signIn;
+              return Routes.auth;
             }
-            break;
           case AuthState.SignedIn:
             // if the user is logged in but currently on a page that should
             // only be visible for logged out users => redirect to profile page.
             if (onLoggedOutRoutes) {
               return Routes.profile;
             }
-            break;
-          case AuthState.AskForPasskeyAppend:
-            // we are not handling passkey append in this example (yet)
-            return Routes.signIn;
         }
 
         return null;

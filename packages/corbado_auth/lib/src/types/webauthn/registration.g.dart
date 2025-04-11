@@ -31,7 +31,7 @@ StartRegisterPublicKey _$StartRegisterPublicKeyFromJson(
           ?.map((e) =>
               StartRegisterPubKeyCredParam.fromJson(e as Map<String, dynamic>))
           .toList(),
-      timeout: json['timeout'] as int?,
+      timeout: (json['timeout'] as num?)?.toInt(),
       attestation: json['attestation'] as String?,
     );
 
@@ -51,7 +51,7 @@ StartRegisterPubKeyCredParam _$StartRegisterPubKeyCredParamFromJson(
         Map<String, dynamic> json) =>
     StartRegisterPubKeyCredParam(
       json['type'] as String,
-      json['alg'] as int,
+      (json['alg'] as num).toInt(),
     );
 
 Map<String, dynamic> _$StartRegisterPubKeyCredParamToJson(
@@ -64,8 +64,8 @@ Map<String, dynamic> _$StartRegisterPubKeyCredParamToJson(
 CorbadoAuthenticatorSelection _$CorbadoAuthenticatorSelectionFromJson(
         Map<String, dynamic> json) =>
     CorbadoAuthenticatorSelection(
-      json['authenticatorAttachment'] as String,
-      json['requireResidentKey'] as bool,
+      json['authenticatorAttachment'] as String?,
+      json['requireResidentKey'] as bool?,
       json['residentKey'] as String,
       json['userVerification'] as String,
     );

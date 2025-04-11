@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:passkeys/availability.dart';
 import 'package:passkeys/types.dart';
 import 'package:passkeys_platform_interface/passkeys_platform_interface.dart';
 
@@ -11,6 +12,7 @@ class PasskeyAuthenticator {
   final PasskeysPlatform _platform;
 
   /// Returns true only if passkeys are supported by the platform.
+  @deprecated
   Future<bool> canAuthenticate() {
     return _platform.canAuthenticate();
   }
@@ -43,6 +45,14 @@ class PasskeyAuthenticator {
           throw MissingGoogleSignInException();
         case 'android-sync-account-not-available':
           throw SyncAccountNotAvailableException();
+        case 'domain-not-associated':
+          throw DomainNotAssociatedException(e.message);
+        case 'deviceNotSupported':
+          throw DeviceNotSupportedException();
+        case 'android-timeout':
+          throw TimeoutException(e.message);
+        case 'ios-security-key-timeout':
+          throw TimeoutException(e.message);
         default:
           rethrow;
       }
@@ -53,8 +63,8 @@ class PasskeyAuthenticator {
   /// Returns [AuthenticateResponseType] which must be sent to the relying party
   /// server.
   Future<AuthenticateResponseType> authenticate(
-    AuthenticateRequestType request,
-  ) async {
+      AuthenticateRequestType request,
+      ) async {
     try {
       await _platform.cancelCurrentAuthenticatorOperation();
       final r = await _platform.authenticate(request);
@@ -62,6 +72,10 @@ class PasskeyAuthenticator {
       return r;
     } on PlatformException catch (e) {
       switch (e.code) {
+        case 'domain-not-associated':
+          throw DomainNotAssociatedException(e.message);
+        case 'no-credentials-available':
+          throw NoCredentialsAvailableException();
         case 'cancelled':
           throw PasskeyAuthCancelledException(e.code, e.message, e.details);
         case 'android-no-credential':
@@ -95,6 +109,14 @@ class PasskeyAuthenticator {
           throw PasskeyAuthCancelledException(e.code, e.message, e.details);
         case 'android-no-credential':
           throw NoCredentialsAvailableException();
+        case 'deviceNotSupported':
+          throw DeviceNotSupportedException();
+        case 'android-no-create-option':
+          throw NoCreateOptionException(e.message);
+        case 'android-timeout':
+          throw TimeoutException(e.message);
+        case 'ios-security-key-timeout':
+          throw TimeoutException(e.message);
         default:
           if (e.code.startsWith('android-unhandled')) {
             throw UnhandledAuthenticatorException(e.code, e.message, e.details);
@@ -106,4 +128,25 @@ class PasskeyAuthenticator {
       }
     }
   }
+
+  /// Returns platform-specific information about the availability of passkeys.
+  ///
+  /// This function returns an instance of [GetAvailability], which provides
+  /// platform-specific methods to query the availability of passkeys.
+  ///
+  /// Supported methods:
+  /// - [GetAvailability.web]: For web-based platforms.
+  /// - [GetAvailability.android]: For Android platforms.
+  /// - [GetAvailability.iOS]: For iOS platforms.
+  ///
+  /// ### Example Usage
+  /// ```dart
+  /// final webAvailability = await getAvailability().web();
+  /// final androidAvailability = await getAvailability().android();
+  /// final iosAvailability = await getAvailability().iOS();
+  /// ```
+  ///
+  /// ### Notes
+  /// - Ensure you are using the correct method for the platform being queried.
+  GetAvailability getAvailability() => GetAvailability(platform: _platform);
 }

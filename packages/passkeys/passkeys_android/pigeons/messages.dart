@@ -84,7 +84,7 @@ class AuthenticatorSelection {
       this.requireResidentKey, this.residentKey, this.userVerification);
 
   /// The authenticator attachment
-  final String authenticatorAttachment;
+  final String? authenticatorAttachment;
 
   /// Whether a resident key is required
   final bool requireResidentKey;
@@ -104,6 +104,7 @@ class RegisterResponse {
     required this.rawId,
     required this.clientDataJSON,
     required this.attestationObject,
+    required this.transports,
   });
 
   /// The ID
@@ -117,6 +118,9 @@ class RegisterResponse {
 
   /// The attestation object
   final String attestationObject;
+
+  /// The supported transports for the authenticator
+  final List<String?> transports;
 }
 
 /// Represents an authenticate response
@@ -173,6 +177,7 @@ abstract class PasskeysApi {
     int? timeout,
     String? userVerification,
     List<AllowCredential>? allowCredentials,
+    bool? preferImmediatelyAvailableCredentials
   );
 
   @async

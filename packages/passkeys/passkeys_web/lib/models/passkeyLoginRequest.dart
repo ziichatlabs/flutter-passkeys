@@ -89,13 +89,29 @@ class PasskeyLoginAllowCredentialType {
 }
 
 enum AuthenticatorTransport {
+  @JsonValue('hybrid')
+  Hybrid,
   @JsonValue('internal')
-  Internal;
+  Internal,
+  @JsonValue('nfc')
+  Nfc,
+  @JsonValue('usb')
+  Usb,
+  @JsonValue('bluetooth')
+  Bluetooth;
 
   factory AuthenticatorTransport.fromPlatformType(String value) {
     switch (value) {
+      case 'hybrid':
+        return AuthenticatorTransport.Hybrid;
       case 'internal':
         return AuthenticatorTransport.Internal;
+      case 'usb':
+        return AuthenticatorTransport.Usb;
+      case 'nfc':
+        return AuthenticatorTransport.Nfc;
+      case 'bluetooth':
+        return AuthenticatorTransport.Bluetooth;
       default:
         throw ArgumentError.value(value);
     }

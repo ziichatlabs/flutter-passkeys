@@ -1,3 +1,49 @@
+## 3.5.2
+* Fixes Conditional Login not triggering (on iOS).
+
+## 3.5.1
+* Exposes the current `projectId` & `rpId`.
+
+## 3.5.0
+* Moved away from `flutter_keychain` to `flutter_secure_storage`.
+* Makes storage project specific.
+
+## 3.4.1
+* Added persisting of `clientEnvHandle` to fix issues with passkeys intelligence.
+
+## 3.4.0
+* Deprecated `customDomain` and replaced with `frontendApiUrl` coming from the backend instead.
+* Fixed a bug where reloading the page when logged in to a Production Project logs you out.
+
+## 3.3.1
+* Bump up version of passkeys to 2.7.1.
+
+## 3.3.0
+* Added Edit Email integration and screen when verifying Email.
+* Added Full name to the sign-up flow when it is enabled in the console.
+* Fixed issue with conditional UI never showing.
+* Added support for editing user full name.
+* Fixed `CorbadoError` not being exported from the package.
+
+## 3.2.2
+* Bump version of passkeys to 2.7.0.
+
+## 3.2.1
+* Fixes Platform.version exception on Web.
+
+## 3.2.0
+* Added `X-Corbado-SDK` header to all requests.
+
+## 3.1.0
+* Updates passkeys dependency to 2.5.0
+* Added `getAvailability` api to check for passkey support
+
+## 3.0.0
+* Switch to Corbado Frontend API v2.
+* Added CorbadoAuthComponent
+* Bump version of passkeys, corbado_frontend_api_client, passkeys_platform_interface, passkeys_web, passkey_android and passkeys_ios
+* BREAKING CHANGE: Removed CustomCorbadoAuth
+
 ## 2.0.8
 * Bump version of passkeys and corbado_frontend_api_client
 

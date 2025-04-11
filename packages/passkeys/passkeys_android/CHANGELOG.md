@@ -1,3 +1,28 @@
+## 2.7.0
+* Implement `passkeys_platform_interface 2.3.1`
+* Handles timeout exceptions
+
+## 2.6.0
+* Added `transports` to RegistrationResponse
+* Fixes `hasPasskeySupport` in `getAvailability`
+
+## 2.5.0
+* Added `getAvailability` api to check for passkey support
+* Upgrade `androidx.credentials:credentials` to 1.3.0
+
+## 2.4.0
+* Added handling for `CreateCredentialNoCreateOptionException` when no viable creation options were found 
+
+## 2.3.0
+* Fixed `requireResidentKey` mapping error (string instead of boolean) causing 1Password failures
+* Added support for `preferImmediatelyAvailableCredentials`
+
+## 2.2.0
+* Added support for AGP 8.0 and newer
+
+## 2.1.0
+* Added support for preferImmediatelyAvailableCredentials
+
 ## 2.0.4
 * Added NoCredentialsAvailableException to indicate that no credentials are available during a login
 

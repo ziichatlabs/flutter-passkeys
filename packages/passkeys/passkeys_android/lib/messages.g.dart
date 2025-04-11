@@ -173,14 +173,14 @@ class ExcludeCredential {
 /// Represents an authenticator selection
 class AuthenticatorSelection {
   AuthenticatorSelection({
-    required this.authenticatorAttachment,
+    this.authenticatorAttachment,
     required this.requireResidentKey,
     required this.residentKey,
     required this.userVerification,
   });
 
   /// The authenticator attachment
-  String authenticatorAttachment;
+  String? authenticatorAttachment;
 
   /// Whether a resident key is required
   bool requireResidentKey;
@@ -203,7 +203,7 @@ class AuthenticatorSelection {
   static AuthenticatorSelection decode(Object result) {
     result as List<Object?>;
     return AuthenticatorSelection(
-      authenticatorAttachment: result[0]! as String,
+      authenticatorAttachment: result[0] as String?,
       requireResidentKey: result[1]! as bool,
       residentKey: result[2]! as String,
       userVerification: result[3]! as String,
@@ -218,6 +218,7 @@ class RegisterResponse {
     required this.rawId,
     required this.clientDataJSON,
     required this.attestationObject,
+    required this.transports,
   });
 
   /// The ID
@@ -232,12 +233,16 @@ class RegisterResponse {
   /// The attestation object
   String attestationObject;
 
+  /// The supported transports for the authenticator
+  List<String?> transports;
+
   Object encode() {
     return <Object?>[
       id,
       rawId,
       clientDataJSON,
       attestationObject,
+      transports,
     ];
   }
 
@@ -248,6 +253,7 @@ class RegisterResponse {
       rawId: result[1]! as String,
       clientDataJSON: result[2]! as String,
       attestationObject: result[3]! as String,
+      transports: (result[4] as List<Object?>?)!.cast<String?>(),
     );
   }
 }
@@ -426,12 +432,12 @@ class PasskeysApi {
     }
   }
 
-  Future<AuthenticateResponse> authenticate(String arg_relyingPartyId, String arg_challenge, int? arg_timeout, String? arg_userVerification, List<AllowCredential?>? arg_allowCredentials) async {
+  Future<AuthenticateResponse> authenticate(String arg_relyingPartyId, String arg_challenge, int? arg_timeout, String? arg_userVerification, List<AllowCredential?>? arg_allowCredentials, bool? arg_preferImmediatelyAvailableCredentials) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.passkeys_android.PasskeysApi.authenticate', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_relyingPartyId, arg_challenge, arg_timeout, arg_userVerification, arg_allowCredentials]) as List<Object?>?;
+        await channel.send(<Object?>[arg_relyingPartyId, arg_challenge, arg_timeout, arg_userVerification, arg_allowCredentials, arg_preferImmediatelyAvailableCredentials]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',

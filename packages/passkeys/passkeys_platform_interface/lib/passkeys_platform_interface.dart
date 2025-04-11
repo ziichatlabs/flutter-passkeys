@@ -30,7 +30,11 @@ abstract class PasskeysPlatform extends PlatformInterface {
   }
 
   /// Returns true if passkeys are supported by the device
-  Future<bool> canAuthenticate();
+  /// We have deprecated this function (it will now always return true).
+  @deprecated
+  Future<bool> canAuthenticate() async {
+    return true;
+  }
 
   /// Handles the platform-specific steps for the registration flow
   /// (see https://webauthn.guide/#registration)
@@ -51,9 +55,13 @@ abstract class PasskeysPlatform extends PlatformInterface {
 
   /// Get saved credential
   Future<AuthenticateResponseType> getSavedCredential(
-      AuthenticateRequestType request,
+    AuthenticateRequestType request,
   );
 
   /// Go to Setting
   Future<void> goToSettings();
+
+  /// Retrieves the availability information for passkeys, user-verifying platform authenticators,
+  /// and conditional mediation whenever possible
+  Future<AvailabilityType> getAvailability();
 }

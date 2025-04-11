@@ -18,6 +18,18 @@ abstract class StorageService {
   /// sets the user
   Future<void> setUser(User value);
 
+  /// returns the user if it has been set
+  Future<String?> getFrontEndApiUrl();
+
+  /// sets the user
+  Future<void> setFrontEndApiUrl(String value);
+
+  // sets the client env handle
+  Future<void> setClientEnvHandle(String value);
+
+  // gets the client env handle
+  Future<String?> getClientEnvHandle();
+
   /// removes all data from (full clear)
   Future<void> clear();
 }

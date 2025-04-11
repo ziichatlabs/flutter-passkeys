@@ -1,3 +1,21 @@
+## 2.5.1
+* Fixed a bug where `hybrid` transports causes login to fail.
+
+## 2.5.0
+* Fixed Exception when trying to register while `authenticatorAttachment` is null on Safari or IOS device. 
+
+## 2.4.0
+* Added `transports` to RegistrationResponse
+
+## 2.3.0
+* Added `hasPasskeySupport` to `AvailabilityType` to check if the platform supports passkeys.
+
+## 2.2.0
+* Added support for WebAssembly (Wasm)
+
+## 2.1.0
+* Added getAvailability() to check for isUserVerifyingPlatformAuthenticatorAvailable and isConditionalMediationAvailable.
+
 ## 2.0.2
 * Version bump for js dependency.
 

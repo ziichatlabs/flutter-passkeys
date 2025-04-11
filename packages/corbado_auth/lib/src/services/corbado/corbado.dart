@@ -1,220 +1,390 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:built_collection/built_collection.dart';
 import 'package:corbado_auth/corbado_auth.dart';
-import 'package:corbado_auth/src/types/auth_response.dart';
-import 'package:corbado_auth/src/types/email_otp_state.dart';
-import 'package:corbado_auth/src/types/exceptions/exceptions.dart';
-import 'package:corbado_auth/src/types/project_config.dart';
-import 'package:corbado_auth/src/types/webauthn/authentication.dart';
-import 'package:corbado_auth/src/types/webauthn/registration.dart';
-import 'package:corbado_frontend_api_client/frontendapi/lib/api.dart';
+import 'package:corbado_auth/src/blocks/types.dart';
+import 'package:corbado_auth/src/services/storage/storage.dart';
+import 'package:corbado_frontend_api_client/corbado_frontend_api_client.dart'
+    as api;
+import 'package:corbado_frontend_api_client/corbado_frontend_api_client.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:passkeys/authenticator.dart';
 
 abstract class CorbadoService {
-  final ApiClient frontendAPIClient;
+  CorbadoService(
+      this.frontendAPIClient, this.passkeyAuthenticator, this._storageService);
 
-  CorbadoService(this.frontendAPIClient);
+  final api.CorbadoFrontendApiClient frontendAPIClient;
+  final PasskeyAuthenticator passkeyAuthenticator;
+  final StorageService _storageService;
 
-  Future<StartRegisterResponse> startAppendPasskey({String? token});
+  String? _processID;
+  DateTime? _processExpiresAt;
 
-  Future<void> finishAppendPasskey(
-    FinishRegisterRequest request, {
-    String? token,
-  });
-
-  Future<void> deletePasskey(String credentialID, {String? token});
-
-  Future<List<PasskeyInfo>> getPasskeys({String? token});
-
-  Future<EmailOTPState> startSignUpWithEmailCode(
-    String email,
-    String fullName,
-  ) async {
-    try {
-      final req = EmailCodeRegisterStartReq(email: email, username: fullName);
-      final res = await UsersApi(frontendAPIClient).emailCodeRegisterStart(req);
-      if (res == null) {
-        throw UnexpectedBackendException('emailLinkRegisterStart', '');
-      }
-
-      return EmailOTPState(EmailOTPFlow.SignUp, res.data.emailCodeID);
-    } on ApiException catch (e) {
-      throw ExceptionFactory.fromBackendMessage(
-        'emailCodeRegisterStart',
-        e.message ?? '',
-      );
+  Future<api.ProcessResponse> initAuthProcess() async {
+    final ciBuilder = await _buildClientInformation();
+    final processInitReq =
+        api.ProcessInitReq((b) => b..clientInformation = ciBuilder);
+    final res = await frontendAPIClient
+        .getAuthApi()
+        .processInit(processInitReq: processInitReq);
+    if (res.data == null) {
+      throw CorbadoError.fromMissingServerResponse();
     }
+
+    if (res.data!.newClientEnvHandle != null) {
+      await _storageService.setClientEnvHandle(res.data!.newClientEnvHandle!);
+    }
+
+    _setProcessState(res.data!.token, res.data!.expiresAt);
+
+    return res.data!.processResponse;
   }
 
-  Future<StartRegisterResponse> startSignUpWithPasskey(
-    String email,
-    String fullName,
-  ) async {
-    try {
-      final result = await UsersApi(frontendAPIClient).passKeyRegisterStart(
-        PassKeyRegisterStartReq(
-          username: email,
-          fullName: fullName,
+  Future<api.ProcessResponse> completeAuthProcess() async {
+    return _wrapWithError(
+        () => frontendAPIClient.getAuthApi().processComplete());
+  }
+
+  Future<api.ProcessResponse> resetAuthProcess() async {
+    final out = await _wrapWithError(
+        () => frontendAPIClient.getAuthApi().processReset());
+
+    final newProcess = out.newProcess;
+    if (newProcess != null) {
+      _setProcessState(newProcess.token, newProcess.expiresAt);
+    }
+
+    return out;
+  }
+
+  void clearAuthProcess() {
+    _processID = null;
+    _processExpiresAt = null;
+  }
+
+  Future<api.ProcessResponse> signupInit(
+      {String? email, String? fullName}) async {
+    final identifierBuilder = ListBuilder<api.LoginIdentifier>();
+    if (email != null) {
+      identifierBuilder.add(
+        api.LoginIdentifier(
+          (b) => b
+            ..type = api.LoginIdentifierType.email
+            ..identifier = email,
         ),
       );
+    }
 
-      if (result == null) {
-        throw UnexpectedBackendException(
-          'passKeyRegisterStart',
-          'result was null',
-        );
+    final signupInitReq = api.SignupInitReq((b) => b
+      ..fullName = fullName
+      ..identifiers = identifierBuilder);
+
+    return _wrapWithError(
+      () => frontendAPIClient.getAuthApi().signupInit(
+            signupInitReq: signupInitReq,
+          ),
+    );
+  }
+
+  Future<api.ProcessResponse> loginInit(
+      String loginIdentifier, bool isPhone) async {
+    final req = api.LoginInitReq((b) => b
+      ..identifierValue = loginIdentifier
+      ..isPhone = isPhone);
+
+    return _wrapWithError(
+        () => frontendAPIClient.getAuthApi().loginInit(loginInitReq: req));
+  }
+
+  Future<api.ProcessResponse> finishPasskeyMediation(
+      String signedChallenge) async {
+    final req = api.PasskeyMediationFinishReq(
+        (b) => b..signedChallenge = signedChallenge);
+
+    return _wrapWithError(() => frontendAPIClient
+        .getAuthApi()
+        .passkeyMediationFinish(passkeyMediationFinishReq: req));
+  }
+
+  Future<api.ProcessResponse> verifyEmailOtpCode(String code) async {
+    final req = api.IdentifierVerifyFinishReq((b) => b
+      ..code = code
+      ..identifierType = api.LoginIdentifierType.email
+      ..verificationType = api.VerificationMethod.emailOtp
+      ..isNewDevice = false);
+
+    return _wrapWithError(() => frontendAPIClient
+        .getAuthApi()
+        .identifierVerifyFinish(identifierVerifyFinishReq: req));
+  }
+
+  Future<api.ProcessResponse> sendEmailOtpCode() async {
+    final req = api.IdentifierVerifyStartReq((b) => b
+      ..identifierType = api.LoginIdentifierType.email
+      ..verificationType = api.VerificationMethod.emailOtp);
+
+    return _wrapWithError(() => frontendAPIClient
+        .getAuthApi()
+        .identifierVerifyStart(identifierVerifyStartReq: req));
+  }
+
+  Future<api.ProcessResponse> sendEmailLink() async {
+    final req = api.IdentifierVerifyStartReq((b) => b
+      ..identifierType = api.LoginIdentifierType.email
+      ..verificationType = api.VerificationMethod.emailLink);
+
+    return _wrapWithError(() => frontendAPIClient
+        .getAuthApi()
+        .identifierVerifyStart(identifierVerifyStartReq: req));
+  }
+
+  Future<api.ProcessResponse> updateEmail(String email) async {
+    final req = api.IdentifierUpdateReq((b) => b
+      ..identifierType = api.LoginIdentifierType.email
+      ..value = email);
+
+    return _wrapWithError(() => frontendAPIClient
+        .getAuthApi()
+        .identifierUpdate(identifierUpdateReq: req));
+  }
+
+  /// passkey related functionalities
+  Future<api.ProcessResponse> appendPasskey() async {
+    final startRes = await _wrapWithError(() => frontendAPIClient
+        .getAuthApi()
+        .passkeyAppendStart(passkeyAppendStartReq: PasskeyAppendStartReq()));
+    if (startRes.blockBody.error != null) {
+      throw CorbadoError.fromMissingServerResponse();
+    }
+
+    final body =
+        startRes.blockBody.data.oneOf.value as api.GeneralBlockPasskeyAppend;
+    final json = jsonDecode(body.challenge) as Map<String, dynamic>;
+
+    final authenticatorReq =
+        StartRegisterResponse.fromJson(json).toPlatformType();
+
+    try {
+      final authenticatorRes =
+          await passkeyAuthenticator.register(authenticatorReq);
+      final attestationResponse = jsonEncode(
+          FinishRegisterRequest.fromRegisterCompleteRequest(authenticatorRes)
+              .toJson());
+      final passkeyAppendReq = api.PasskeyAppendFinishReq(
+          (b) => b..signedChallenge = attestationResponse);
+
+      return _wrapWithError(() => frontendAPIClient
+          .getAuthApi()
+          .passkeyAppendFinish(passkeyAppendFinishReq: passkeyAppendReq));
+    } on AuthenticatorException catch (e) {
+      throw CorbadoError.fromAuthenticatorError(e);
+    }
+  }
+
+  Future<void> sessionAppendPasskey() async {
+    final ci = await _buildClientInformation();
+    final startReq =
+        api.MePasskeysAppendStartReq((b) => b..clientInformation = ci);
+    final startRes = await _wrapWithError(() => frontendAPIClient
+        .getUsersApi()
+        .currentUserPasskeyAppendStart(mePasskeysAppendStartReq: startReq));
+
+    if (startRes.attestationOptions.isEmpty) {
+      throw CorbadoError.fromMissingServerResponse();
+    }
+
+    final json =
+        jsonDecode(startRes.attestationOptions) as Map<String, dynamic>;
+    try {
+      final authenticatorReq =
+          StartRegisterResponse.fromJson(json).toPlatformType();
+      final authenticatorRes =
+          await passkeyAuthenticator.register(authenticatorReq);
+      final attestationResponse = jsonEncode(
+          FinishRegisterRequest.fromRegisterCompleteRequest(authenticatorRes)
+              .toJson());
+      final mePasskeysAppendFinishReq = api.MePasskeysAppendFinishReq((b) => b
+        ..attestationResponse = attestationResponse
+        ..clientInformation = ci);
+
+      return _wrapWithErrorEmptyResponse(() => frontendAPIClient
+          .getUsersApi()
+          .currentUserPasskeyAppendFinish(
+              mePasskeysAppendFinishReq: mePasskeysAppendFinishReq));
+    } on AuthenticatorException catch (e) {
+      throw CorbadoError.fromAuthenticatorError(e);
+    } catch (e) {
+      throw CorbadoError.fromUnknownError(e);
+    }
+  }
+
+  Future<List<api.Passkey>> sessionListPasskeys({String? token}) async {
+    final res = await _wrapWithError(
+        () => frontendAPIClient.getUsersApi().currentUserPasskeyGet());
+
+    return res.passkeys.toList();
+  }
+
+  Future<void> sessionDeletePasskeys({required String credentialID}) async {
+    await _wrapWithError(() => frontendAPIClient
+        .getUsersApi()
+        .currentUserPasskeyDelete(credentialID: credentialID));
+  }
+
+  Future<void> sessionUpdateUser({String? fullname}) async {
+    final meUpdateReq = api.MeUpdateReq((b) => b..fullName = fullname);
+    await _wrapWithErrorEmptyResponse(() => frontendAPIClient
+        .getUsersApi()
+        .currentUserUpdate(meUpdateReq: meUpdateReq));
+  }
+
+  Future<api.ProcessResponse> verifyPasskey() async {
+    final startRes = await _wrapWithError(() => frontendAPIClient
+        .getAuthApi()
+        .passkeyLoginStart(passkeyLoginStartReq: api.PasskeyLoginStartReq()));
+    if (startRes.blockBody.error != null) {
+      throw CorbadoError.fromMissingServerResponse();
+    }
+
+    final body =
+        startRes.blockBody.data.oneOf.value as api.GeneralBlockPasskeyVerify;
+    final json = jsonDecode(body.challenge) as Map<String, dynamic>;
+
+    final authenticatorReq = StartLoginResponse.fromJson(json).toPlatformType(
+        conditional: false, preferImmediatelyAvailableCredentials: false);
+    try {
+      final authenticatorRes =
+          await passkeyAuthenticator.authenticate(authenticatorReq);
+      final assertionResponse = jsonEncode(
+          FinishLoginRequest.fromPlatformType(authenticatorRes).toJson());
+      final passkeyLoginFinishReq = api.PasskeyLoginFinishReq(
+          (b) => b..signedChallenge = assertionResponse);
+
+      return _wrapWithError(() => frontendAPIClient
+          .getAuthApi()
+          .passkeyLoginFinish(passkeyLoginFinishReq: passkeyLoginFinishReq));
+    } on AuthenticatorException catch (e) {
+      if (e is NoCredentialsAvailableException) {
+        rethrow;
       }
 
-      final json = jsonDecode(result.data.challenge) as Map<String, dynamic>;
-      return StartRegisterResponse.fromJson(json);
-    } on ApiException catch (e) {
-      throw ExceptionFactory.fromBackendMessage(
-        'passKeyRegisterStart',
-        e.message ?? '',
-      );
+      throw CorbadoError.fromAuthenticatorError(e);
     }
   }
 
-  Future<AuthResponse> finishSignUpWithPasskey(
-      FinishRegisterRequest request) async {
+  Future<api.ProcessResponse> verifyPasskeyConditional(
+      String challenge, bool silent) async {
+    final json = jsonDecode(challenge) as Map<String, dynamic>;
+    final authenticatorReq = StartLoginResponse.fromJson(json).toPlatformType(
+      conditional: silent,
+    );
+
     try {
-      final signedChallenge = jsonEncode(request.toJson());
-      final result =
-          await UsersApi(frontendAPIClient).passKeyRegisterFinishWithHttpInfo(
-        PassKeyFinishReq(signedChallenge: signedChallenge),
-      );
+      final authenticatorRes =
+          await passkeyAuthenticator.authenticate(authenticatorReq);
+      final assertionResponse = jsonEncode(
+          FinishLoginRequest.fromPlatformType(authenticatorRes).toJson());
+      final passkeyLoginFinishReq = api.PasskeyMediationFinishReq(
+          (b) => b..signedChallenge = assertionResponse);
 
-      final authResponse = await AuthResponse.fromHttpResponse(result);
-
-      return authResponse;
-    } on ApiException catch (e) {
-      throw ExceptionFactory.fromBackendMessage(
-        'passKeyRegisterFinish',
-        e.message ?? '',
-      );
-    }
-  }
-
-  Future<EmailOTPState> startLoginWithEmailCode(
-    String email,
-  ) async {
-    try {
-      final req = EmailCodeLoginStartReq(username: email);
-      final res = await UsersApi(frontendAPIClient).emailCodeLoginStart(req);
-      if (res == null) {
-        throw UnexpectedBackendException('emailCodeLoginStart', '');
+      return _wrapWithError(() => frontendAPIClient
+          .getAuthApi()
+          .passkeyMediationFinish(
+              passkeyMediationFinishReq: passkeyLoginFinishReq));
+    } on AuthenticatorException catch (e) {
+      if (e is NoCredentialsAvailableException ||
+          e is PasskeyAuthCancelledException) {
+        rethrow;
       }
 
-      return EmailOTPState(EmailOTPFlow.SignUp, res.data.emailCodeID);
-    } on ApiException catch (e) {
-      throw ExceptionFactory.fromBackendMessage(
-        'emailCodeLoginStart',
-        e.message ?? '',
-      );
+      throw CorbadoError.fromAuthenticatorError(e);
     }
   }
 
-  Future<StartLoginResponse> startLoginWithPasskey(
-    String email,
-    bool conditional,
-  ) async {
+  Future<void> cancelPasskeyOperation() async {
+    return passkeyAuthenticator.cancelCurrentAuthenticatorOperation();
+  }
+
+  Future<T> _wrapWithError<T>(Future<Response<T?>> Function() callback) async {
+    Response<T?> response;
     try {
-      String challenge;
-      if (conditional) {
-        final result = await UsersApi(frontendAPIClient).passKeyMediationStart(
-          PassKeyMediationStartReq(username: email),
-        );
+      response = await callback();
+    } catch (e) {
+      throw CorbadoError.fromUnknownError(e);
+    }
 
-        if (result == null) {
-          throw Exception(
-            'An unknown error occurred during the Corbado API call',
-          );
-        }
+    if (response.data == null) {
+      throw CorbadoError.fromMissingServerResponse();
+    }
 
-        challenge = result.data.challenge;
-      } else {
-        final result = await UsersApi(frontendAPIClient).passKeyLoginStart(
-          PassKeyLoginStartReq(username: email),
-        );
+    return response.data!;
+  }
 
-        if (result == null) {
-          throw Exception(
-            'An unknown error occurred during the Corbado API call',
-          );
-        }
-
-        challenge = result.data.challenge;
-      }
-
-      if (challenge.isEmpty) {
-        throw NoPasskeyForDeviceException();
-      }
-
-      final json = jsonDecode(challenge) as Map<String, dynamic>;
-      return StartLoginResponse.fromJson(json);
-    } on ApiException catch (e) {
-      throw ExceptionFactory.fromBackendMessage(
-        'passKeyAuthenticateStart',
-        e.message ?? '',
-      );
+  Future<void> _wrapWithErrorEmptyResponse(
+      Future<Response<void>> Function() callback) async {
+    try {
+      await callback();
+    } catch (e) {
+      throw CorbadoError.fromUnknownError(e);
     }
   }
 
-  Future<AuthResponse> finishLoginWithPasskey(
-      FinishLoginRequest request) async {
-    try {
-      final signedChallenge = jsonEncode(request.toJson());
+  void _setProcessState(String token, int expiresAt) {
+    frontendAPIClient.dio.options.headers.addAll({
+      'x-corbado-process-id': token,
+    });
 
-      final response =
-          await UsersApi(frontendAPIClient).passKeyLoginFinishWithHttpInfo(
-        PassKeyFinishReq(signedChallenge: signedChallenge),
-      );
+    _processID = token;
+    _processExpiresAt = DateTime.fromMillisecondsSinceEpoch(expiresAt * 1000);
 
-      final res = await AuthResponse.fromHttpResponse(response);
-      return res;
-    } on ApiException catch (e) {
-      throw ExceptionFactory.fromBackendMessage(
-        'passKeyAuthenticateFinish',
-        e.message ?? '',
-      );
-    }
+    return;
   }
 
-  Future<AuthResponse> completeEmailCode(
-    String emailCodeID,
-    String code,
-  ) async {
-    try {
-      final req = EmailCodeConfirmReq(emailCodeID: emailCodeID, code: code);
-      final res =
-          await UsersApi(frontendAPIClient).emailCodeConfirmWithHttpInfo(req);
-      final authResponse = await AuthResponse.fromHttpResponse(res);
+  Future<api.ClientInformationBuilder> _buildClientInformation() async {
+    final clientEnvHandle = await _storageService.getClientEnvHandle();
+    final getAvailability = passkeyAuthenticator.getAvailability();
 
-      return authResponse;
-    } on ApiException catch (e) {
-      throw ExceptionFactory.fromBackendMessage(
-        'emailCodeConfirm',
-        e.message ?? '',
-      );
-    }
-  }
-
-  Future<ProjectConfig> getProjectConfig() async {
-    try {
-      final res = await ProjectsApi(frontendAPIClient).projectConfig();
-      return ProjectConfig.fromResponse(res!.data);
-    } on ApiException catch (e) {
-      throw ExceptionFactory.fromBackendMessage(
-        'getProjectConfig',
-        e.message ?? '',
-      );
+    if (kIsWeb) {
+      final passkeyAvailability = await getAvailability.web();
+      return api.ClientInformationBuilder()
+        ..isNative = passkeyAvailability.isNative
+        ..isUserVerifyingPlatformAuthenticatorAvailable =
+            passkeyAvailability.isUserVerifyingPlatformAuthenticatorAvailable
+        ..isConditionalMediationAvailable =
+            passkeyAvailability.isConditionalMediationAvailable
+        ..clientEnvHandle = clientEnvHandle;
+    } else if (Platform.isIOS) {
+      final passkeyAvailability = await getAvailability.iOS();
+      return api.ClientInformationBuilder()
+        ..isNative = passkeyAvailability.isNative
+        ..isUserVerifyingPlatformAuthenticatorAvailable =
+            passkeyAvailability.hasBiometrics
+        ..isConditionalMediationAvailable = null
+        ..clientEnvHandle = clientEnvHandle;
+    } else {
+      final passkeyAvailability = await getAvailability.android();
+      return api.ClientInformationBuilder()
+        ..isNative = passkeyAvailability.isNative
+        ..isUserVerifyingPlatformAuthenticatorAvailable =
+            passkeyAvailability.isUserVerifyingPlatformAuthenticatorAvailable
+        ..isConditionalMediationAvailable = null
+        ..clientEnvHandle = clientEnvHandle;
     }
   }
 
   /// Builds an API client to interact with the Corbado frontend API.
   /// Depending on the platform different headers will be set.
-  static String getFrontendAPIDomain(String projectId, {String? customDomain}) {
+  static String getFrontendAPIDomain(String projectId,
+      {@deprecated String? customDomain}) {
     var frontendAPIDomain = 'https://$projectId.frontendapi.corbado.io';
     if (customDomain != null && customDomain.isNotEmpty) {
+      if (kDebugMode) {
+        print(
+            '[DEPRECATED] The "customDomain" parameter is deprecated and will be removed in a future release.');
+      }
       frontendAPIDomain = customDomain;
     }
 

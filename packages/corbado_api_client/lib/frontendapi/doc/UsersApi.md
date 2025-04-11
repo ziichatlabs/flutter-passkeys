@@ -1,80 +1,61 @@
-# corbado_api.api.UsersApi
+# corbado_frontend_api_client.api.UsersApi
 
 ## Load the API package
 ```dart
-import 'package:corbado_api/api.dart';
+import 'package:corbado_frontend_api_client/api.dart';
 ```
 
-All URIs are relative to *https://<project ID>.frontendapi.corbado.io*
+All URIs are relative to *https://&lt;project ID&gt;.frontendapi.corbado.io*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**authMethodsList**](UsersApi.md#authmethodslist) | **POST** /v1/users/authmethods | 
-[**currentUserGet**](UsersApi.md#currentuserget) | **GET** /v1/me | 
-[**currentUserPassKeyDelete**](UsersApi.md#currentuserpasskeydelete) | **DELETE** /v1/me/passkeys/{credentialID} | 
-[**currentUserPassKeyGet**](UsersApi.md#currentuserpasskeyget) | **GET** /v1/me/passkeys | 
-[**emailCodeConfirm**](UsersApi.md#emailcodeconfirm) | **POST** /v1/users/emailcodes/confirm | 
-[**emailCodeLoginStart**](UsersApi.md#emailcodeloginstart) | **POST** /v1/users/emailcodes/login/start | 
-[**emailCodeRegisterStart**](UsersApi.md#emailcoderegisterstart) | **POST** /v1/users/emailcodes/register/start | 
-[**emailCodeStatus**](UsersApi.md#emailcodestatus) | **POST** /v1/users/emailcodes/status | 
-[**emailLinkConfirm**](UsersApi.md#emaillinkconfirm) | **POST** /v1/users/emaillinks/confirm | 
-[**emailLinkLoginStart**](UsersApi.md#emaillinkloginstart) | **POST** /v1/users/emaillinks/login/start | 
-[**emailLinkRegisterStart**](UsersApi.md#emaillinkregisterstart) | **POST** /v1/users/emaillinks/register/start | 
-[**emailLinkStatus**](UsersApi.md#emaillinkstatus) | **POST** /v1/users/emaillinks/status | 
-[**loginToken**](UsersApi.md#logintoken) | **POST** /v1/users/logintoken | 
-[**passKeyAppendFinish**](UsersApi.md#passkeyappendfinish) | **POST** /v1/users/passkey/append/finish | 
-[**passKeyAppendStart**](UsersApi.md#passkeyappendstart) | **POST** /v1/users/passkey/append/start | 
-[**passKeyAssociateStart**](UsersApi.md#passkeyassociatestart) | **POST** /v1/users/passkey/associate/start | 
-[**passKeyCredentialExists**](UsersApi.md#passkeycredentialexists) | **POST** /v1/users/device/passkey | 
-[**passKeyLoginFinish**](UsersApi.md#passkeyloginfinish) | **POST** /v1/users/passkey/login/finish | 
-[**passKeyLoginStart**](UsersApi.md#passkeyloginstart) | **POST** /v1/users/passkey/login/start | 
-[**passKeyMediationStart**](UsersApi.md#passkeymediationstart) | **POST** /v1/users/passkey/mediation/start | 
-[**passKeyRegisterFinish**](UsersApi.md#passkeyregisterfinish) | **POST** /v1/users/passkey/register/finish | 
-[**passKeyRegisterStart**](UsersApi.md#passkeyregisterstart) | **POST** /v1/users/passkey/register/start | 
-[**password**](UsersApi.md#password) | **POST** /v1/users/password/verify | 
+[**currentUserDelete**](UsersApi.md#currentuserdelete) | **DELETE** /v2/me | 
+[**currentUserGet**](UsersApi.md#currentuserget) | **GET** /v2/me | 
+[**currentUserIdentifierCreate**](UsersApi.md#currentuseridentifiercreate) | **POST** /v2/me/identifier | 
+[**currentUserIdentifierDelete**](UsersApi.md#currentuseridentifierdelete) | **DELETE** /v2/me/identifier | 
+[**currentUserIdentifierUpdate**](UsersApi.md#currentuseridentifierupdate) | **PATCH** /v2/me/identifier | 
+[**currentUserIdentifierVerifyFinish**](UsersApi.md#currentuseridentifierverifyfinish) | **POST** /v2/me/identifier/verify/finish | 
+[**currentUserIdentifierVerifyStart**](UsersApi.md#currentuseridentifierverifystart) | **POST** /v2/me/identifier/verify/start | 
+[**currentUserPasskeyAppendFinish**](UsersApi.md#currentuserpasskeyappendfinish) | **POST** /v2/me/passkeys/append/finish | 
+[**currentUserPasskeyAppendStart**](UsersApi.md#currentuserpasskeyappendstart) | **POST** /v2/me/passkeys/append/start | 
+[**currentUserPasskeyDelete**](UsersApi.md#currentuserpasskeydelete) | **DELETE** /v2/me/passkeys/{credentialID} | 
+[**currentUserPasskeyGet**](UsersApi.md#currentuserpasskeyget) | **GET** /v2/me/passkeys | 
+[**currentUserSessionLogout**](UsersApi.md#currentusersessionlogout) | **POST** /v2/me/logout | 
+[**currentUserSessionRefresh**](UsersApi.md#currentusersessionrefresh) | **POST** /v2/me/refresh | 
+[**currentUserUpdate**](UsersApi.md#currentuserupdate) | **PATCH** /v2/me | 
 
 
-# **authMethodsList**
-> AuthMethodsListRsp authMethodsList(authMethodsListReq)
+# **currentUserDelete**
+> GenericRsp currentUserDelete()
 
 
 
-Lists user's available authentication methods
+Deletes current user
 
 ### Example
 ```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+import 'package:corbado_frontend_api_client/api.dart';
 // TODO Configure API key authorization: projectID
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
 // uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
 
-final api_instance = UsersApi();
-final authMethodsListReq = AuthMethodsListReq(); // AuthMethodsListReq | 
+final api = CorbadoFrontendApiClient().getUsersApi();
 
 try {
-    final result = api_instance.authMethodsList(authMethodsListReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->authMethodsList: $e\n');
+    final response = api.currentUserDelete();
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->currentUserDelete: $e\n');
 }
 ```
 
 ### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **authMethodsListReq** | [**AuthMethodsListReq**](AuthMethodsListReq.md)|  | 
+This endpoint does not need any parameter.
 
 ### Return type
 
-[**AuthMethodsListRsp**](AuthMethodsListRsp.md)
+[**GenericRsp**](GenericRsp.md)
 
 ### Authorization
 
@@ -82,7 +63,7 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
+ - **Content-Type**: Not defined
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -96,24 +77,18 @@ Gets current user
 
 ### Example
 ```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+import 'package:corbado_frontend_api_client/api.dart';
 // TODO Configure API key authorization: projectID
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
 // uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
 
-final api_instance = UsersApi();
+final api = CorbadoFrontendApiClient().getUsersApi();
 
 try {
-    final result = api_instance.currentUserGet();
-    print(result);
-} catch (e) {
+    final response = api.currentUserGet();
+    print(response);
+} catch on DioException (e) {
     print('Exception when calling UsersApi->currentUserGet: $e\n');
 }
 ```
@@ -136,35 +111,29 @@ This endpoint does not need any parameter.
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **currentUserPassKeyDelete**
-> GenericRsp currentUserPassKeyDelete(credentialID)
+# **currentUserIdentifierCreate**
+> GenericRsp currentUserIdentifierCreate(meIdentifierCreateReq)
 
 
 
-Delete current user's passkeys
+Creates an identifier
 
 ### Example
 ```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+import 'package:corbado_frontend_api_client/api.dart';
 // TODO Configure API key authorization: projectID
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
 // uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
 
-final api_instance = UsersApi();
-final credentialID = cre-abc123; // String | Credential ID from passkeys
+final api = CorbadoFrontendApiClient().getUsersApi();
+final MeIdentifierCreateReq meIdentifierCreateReq = ; // MeIdentifierCreateReq | 
 
 try {
-    final result = api_instance.currentUserPassKeyDelete(credentialID);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->currentUserPassKeyDelete: $e\n');
+    final response = api.currentUserIdentifierCreate(meIdentifierCreateReq);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->currentUserIdentifierCreate: $e\n');
 }
 ```
 
@@ -172,7 +141,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **credentialID** | **String**| Credential ID from passkeys | 
+ **meIdentifierCreateReq** | [**MeIdentifierCreateReq**](MeIdentifierCreateReq.md)|  | 
 
 ### Return type
 
@@ -184,13 +153,341 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **currentUserIdentifierDelete**
+> GenericRsp currentUserIdentifierDelete(meIdentifierDeleteReq)
+
+
+
+Deletes an identifier
+
+### Example
+```dart
+import 'package:corbado_frontend_api_client/api.dart';
+// TODO Configure API key authorization: projectID
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
+
+final api = CorbadoFrontendApiClient().getUsersApi();
+final MeIdentifierDeleteReq meIdentifierDeleteReq = ; // MeIdentifierDeleteReq | 
+
+try {
+    final response = api.currentUserIdentifierDelete(meIdentifierDeleteReq);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->currentUserIdentifierDelete: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **meIdentifierDeleteReq** | [**MeIdentifierDeleteReq**](MeIdentifierDeleteReq.md)|  | 
+
+### Return type
+
+[**GenericRsp**](GenericRsp.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **currentUserIdentifierUpdate**
+> GenericRsp currentUserIdentifierUpdate(meIdentifierUpdateReq)
+
+
+
+Modifies an identifier (only permitted for username; identifierID will change)
+
+### Example
+```dart
+import 'package:corbado_frontend_api_client/api.dart';
+// TODO Configure API key authorization: projectID
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
+
+final api = CorbadoFrontendApiClient().getUsersApi();
+final MeIdentifierUpdateReq meIdentifierUpdateReq = ; // MeIdentifierUpdateReq | 
+
+try {
+    final response = api.currentUserIdentifierUpdate(meIdentifierUpdateReq);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->currentUserIdentifierUpdate: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **meIdentifierUpdateReq** | [**MeIdentifierUpdateReq**](MeIdentifierUpdateReq.md)|  | 
+
+### Return type
+
+[**GenericRsp**](GenericRsp.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **currentUserIdentifierVerifyFinish**
+> GenericRsp currentUserIdentifierVerifyFinish(meIdentifierVerifyFinishReq)
+
+
+
+Verifies challenge
+
+### Example
+```dart
+import 'package:corbado_frontend_api_client/api.dart';
+// TODO Configure API key authorization: projectID
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
+
+final api = CorbadoFrontendApiClient().getUsersApi();
+final MeIdentifierVerifyFinishReq meIdentifierVerifyFinishReq = ; // MeIdentifierVerifyFinishReq | 
+
+try {
+    final response = api.currentUserIdentifierVerifyFinish(meIdentifierVerifyFinishReq);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->currentUserIdentifierVerifyFinish: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **meIdentifierVerifyFinishReq** | [**MeIdentifierVerifyFinishReq**](MeIdentifierVerifyFinishReq.md)|  | 
+
+### Return type
+
+[**GenericRsp**](GenericRsp.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **currentUserIdentifierVerifyStart**
+> GenericRsp currentUserIdentifierVerifyStart(meIdentifierVerifyStartReq)
+
+
+
+Creates challenge (only email otp and phone otp supported for now)
+
+### Example
+```dart
+import 'package:corbado_frontend_api_client/api.dart';
+// TODO Configure API key authorization: projectID
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
+
+final api = CorbadoFrontendApiClient().getUsersApi();
+final MeIdentifierVerifyStartReq meIdentifierVerifyStartReq = ; // MeIdentifierVerifyStartReq | 
+
+try {
+    final response = api.currentUserIdentifierVerifyStart(meIdentifierVerifyStartReq);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->currentUserIdentifierVerifyStart: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **meIdentifierVerifyStartReq** | [**MeIdentifierVerifyStartReq**](MeIdentifierVerifyStartReq.md)|  | 
+
+### Return type
+
+[**GenericRsp**](GenericRsp.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **currentUserPasskeyAppendFinish**
+> currentUserPasskeyAppendFinish(mePasskeysAppendFinishReq)
+
+
+
+Finishes passkey append for current user
+
+### Example
+```dart
+import 'package:corbado_frontend_api_client/api.dart';
+// TODO Configure API key authorization: projectID
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
+
+final api = CorbadoFrontendApiClient().getUsersApi();
+final MePasskeysAppendFinishReq mePasskeysAppendFinishReq = ; // MePasskeysAppendFinishReq | 
+
+try {
+    api.currentUserPasskeyAppendFinish(mePasskeysAppendFinishReq);
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->currentUserPasskeyAppendFinish: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **mePasskeysAppendFinishReq** | [**MePasskeysAppendFinishReq**](MePasskeysAppendFinishReq.md)|  | 
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **currentUserPasskeyAppendStart**
+> MePasskeysAppendStartRsp currentUserPasskeyAppendStart(mePasskeysAppendStartReq)
+
+
+
+Starts passkey append for current user
+
+### Example
+```dart
+import 'package:corbado_frontend_api_client/api.dart';
+// TODO Configure API key authorization: projectID
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
+
+final api = CorbadoFrontendApiClient().getUsersApi();
+final MePasskeysAppendStartReq mePasskeysAppendStartReq = ; // MePasskeysAppendStartReq | 
+
+try {
+    final response = api.currentUserPasskeyAppendStart(mePasskeysAppendStartReq);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->currentUserPasskeyAppendStart: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **mePasskeysAppendStartReq** | [**MePasskeysAppendStartReq**](MePasskeysAppendStartReq.md)|  | 
+
+### Return type
+
+[**MePasskeysAppendStartRsp**](MePasskeysAppendStartRsp.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **currentUserPasskeyDelete**
+> MePasskeyDeleteRsp currentUserPasskeyDelete(credentialID)
+
+
+
+Delete current user's passkeys
+
+### Example
+```dart
+import 'package:corbado_frontend_api_client/api.dart';
+// TODO Configure API key authorization: projectID
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
+// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
+
+final api = CorbadoFrontendApiClient().getUsersApi();
+final String credentialID = cre-abc123; // String | Credential ID from passkeys
+
+try {
+    final response = api.currentUserPasskeyDelete(credentialID);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->currentUserPasskeyDelete: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **credentialID** | **String**| Credential ID from passkeys | 
+
+### Return type
+
+[**MePasskeyDeleteRsp**](MePasskeyDeleteRsp.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
+
+### HTTP request headers
+
  - **Content-Type**: Not defined
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **currentUserPassKeyGet**
-> MePassKeyRsp currentUserPassKeyGet()
+# **currentUserPasskeyGet**
+> MePasskeyRsp currentUserPasskeyGet()
 
 
 
@@ -198,25 +495,19 @@ Gets current user's passkeys
 
 ### Example
 ```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+import 'package:corbado_frontend_api_client/api.dart';
 // TODO Configure API key authorization: projectID
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
 // uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
 
-final api_instance = UsersApi();
+final api = CorbadoFrontendApiClient().getUsersApi();
 
 try {
-    final result = api_instance.currentUserPassKeyGet();
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->currentUserPassKeyGet: $e\n');
+    final response = api.currentUserPasskeyGet();
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->currentUserPasskeyGet: $e\n');
 }
 ```
 
@@ -225,7 +516,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**MePassKeyRsp**](MePassKeyRsp.md)
+[**MePasskeyRsp**](MePasskeyRsp.md)
 
 ### Authorization
 
@@ -238,47 +529,36 @@ This endpoint does not need any parameter.
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **emailCodeConfirm**
-> EmailCodeConfirmRsp emailCodeConfirm(emailCodeConfirmReq)
+# **currentUserSessionLogout**
+> currentUserSessionLogout()
 
 
 
-Performs email OTP register confirm
+Performs session logout
 
 ### Example
 ```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+import 'package:corbado_frontend_api_client/api.dart';
 // TODO Configure API key authorization: projectID
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
 // uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
 
-final api_instance = UsersApi();
-final emailCodeConfirmReq = EmailCodeConfirmReq(); // EmailCodeConfirmReq | 
+final api = CorbadoFrontendApiClient().getUsersApi();
 
 try {
-    final result = api_instance.emailCodeConfirm(emailCodeConfirmReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->emailCodeConfirm: $e\n');
+    api.currentUserSessionLogout();
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->currentUserSessionLogout: $e\n');
 }
 ```
 
 ### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **emailCodeConfirmReq** | [**EmailCodeConfirmReq**](EmailCodeConfirmReq.md)|  | 
+This endpoint does not need any parameter.
 
 ### Return type
 
-[**EmailCodeConfirmRsp**](EmailCodeConfirmRsp.md)
+void (empty response body)
 
 ### Authorization
 
@@ -286,52 +566,42 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **emailCodeLoginStart**
-> EmailCodeLoginStartRsp emailCodeLoginStart(emailCodeLoginStartReq)
+# **currentUserSessionRefresh**
+> MeRefreshRsp currentUserSessionRefresh()
 
 
 
-Performs email OTP login start
+Performs session refresh
 
 ### Example
 ```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+import 'package:corbado_frontend_api_client/api.dart';
 // TODO Configure API key authorization: projectID
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
 // uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
 
-final api_instance = UsersApi();
-final emailCodeLoginStartReq = EmailCodeLoginStartReq(); // EmailCodeLoginStartReq | 
+final api = CorbadoFrontendApiClient().getUsersApi();
 
 try {
-    final result = api_instance.emailCodeLoginStart(emailCodeLoginStartReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->emailCodeLoginStart: $e\n');
+    final response = api.currentUserSessionRefresh();
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->currentUserSessionRefresh: $e\n');
 }
 ```
 
 ### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **emailCodeLoginStartReq** | [**EmailCodeLoginStartReq**](EmailCodeLoginStartReq.md)|  | 
+This endpoint does not need any parameter.
 
 ### Return type
 
-[**EmailCodeLoginStartRsp**](EmailCodeLoginStartRsp.md)
+[**MeRefreshRsp**](MeRefreshRsp.md)
 
 ### Authorization
 
@@ -339,40 +609,34 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
+ - **Content-Type**: Not defined
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **emailCodeRegisterStart**
-> EmailCodeRegisterStartRsp emailCodeRegisterStart(emailCodeRegisterStartReq)
+# **currentUserUpdate**
+> GenericRsp currentUserUpdate(meUpdateReq)
 
 
 
-Performs email OTP register start
+Updates current user
 
 ### Example
 ```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+import 'package:corbado_frontend_api_client/api.dart';
 // TODO Configure API key authorization: projectID
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
 // uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 //defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
 
-final api_instance = UsersApi();
-final emailCodeRegisterStartReq = EmailCodeRegisterStartReq(); // EmailCodeRegisterStartReq | 
+final api = CorbadoFrontendApiClient().getUsersApi();
+final MeUpdateReq meUpdateReq = ; // MeUpdateReq | 
 
 try {
-    final result = api_instance.emailCodeRegisterStart(emailCodeRegisterStartReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->emailCodeRegisterStart: $e\n');
+    final response = api.currentUserUpdate(meUpdateReq);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling UsersApi->currentUserUpdate: $e\n');
 }
 ```
 
@@ -380,859 +644,11 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **emailCodeRegisterStartReq** | [**EmailCodeRegisterStartReq**](EmailCodeRegisterStartReq.md)|  | 
+ **meUpdateReq** | [**MeUpdateReq**](MeUpdateReq.md)|  | 
 
 ### Return type
 
-[**EmailCodeRegisterStartRsp**](EmailCodeRegisterStartRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **emailCodeStatus**
-> EmailCodeStatusRsp emailCodeStatus(emailCodeStatusReq)
-
-
-
-Performs email OTP login status check
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final emailCodeStatusReq = EmailCodeStatusReq(); // EmailCodeStatusReq | 
-
-try {
-    final result = api_instance.emailCodeStatus(emailCodeStatusReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->emailCodeStatus: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **emailCodeStatusReq** | [**EmailCodeStatusReq**](EmailCodeStatusReq.md)|  | 
-
-### Return type
-
-[**EmailCodeStatusRsp**](EmailCodeStatusRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **emailLinkConfirm**
-> EmailLinkConfirmRsp emailLinkConfirm(emailLinkConfirmReq)
-
-
-
-Performs email link register confirm
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final emailLinkConfirmReq = EmailLinkConfirmReq(); // EmailLinkConfirmReq | 
-
-try {
-    final result = api_instance.emailLinkConfirm(emailLinkConfirmReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->emailLinkConfirm: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **emailLinkConfirmReq** | [**EmailLinkConfirmReq**](EmailLinkConfirmReq.md)|  | 
-
-### Return type
-
-[**EmailLinkConfirmRsp**](EmailLinkConfirmRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **emailLinkLoginStart**
-> EmailLinkLoginStartRsp emailLinkLoginStart(emailLinkLoginStartReq)
-
-
-
-Performs email link login start
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final emailLinkLoginStartReq = EmailLinkLoginStartReq(); // EmailLinkLoginStartReq | 
-
-try {
-    final result = api_instance.emailLinkLoginStart(emailLinkLoginStartReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->emailLinkLoginStart: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **emailLinkLoginStartReq** | [**EmailLinkLoginStartReq**](EmailLinkLoginStartReq.md)|  | 
-
-### Return type
-
-[**EmailLinkLoginStartRsp**](EmailLinkLoginStartRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **emailLinkRegisterStart**
-> EmailLinkRegisterStartRsp emailLinkRegisterStart(emailLinkRegisterStartReq)
-
-
-
-Performs email link register start
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final emailLinkRegisterStartReq = EmailLinkRegisterStartReq(); // EmailLinkRegisterStartReq | 
-
-try {
-    final result = api_instance.emailLinkRegisterStart(emailLinkRegisterStartReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->emailLinkRegisterStart: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **emailLinkRegisterStartReq** | [**EmailLinkRegisterStartReq**](EmailLinkRegisterStartReq.md)|  | 
-
-### Return type
-
-[**EmailLinkRegisterStartRsp**](EmailLinkRegisterStartRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **emailLinkStatus**
-> EmailLinkStatusRsp emailLinkStatus(emailLinkStatusReq)
-
-
-
-Performs email link login status check
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final emailLinkStatusReq = EmailLinkStatusReq(); // EmailLinkStatusReq | 
-
-try {
-    final result = api_instance.emailLinkStatus(emailLinkStatusReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->emailLinkStatus: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **emailLinkStatusReq** | [**EmailLinkStatusReq**](EmailLinkStatusReq.md)|  | 
-
-### Return type
-
-[**EmailLinkStatusRsp**](EmailLinkStatusRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **loginToken**
-> LoginTokenRsp loginToken(loginTokenReq)
-
-
-
-Performs login for given token
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final loginTokenReq = LoginTokenReq(); // LoginTokenReq | 
-
-try {
-    final result = api_instance.loginToken(loginTokenReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->loginToken: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **loginTokenReq** | [**LoginTokenReq**](LoginTokenReq.md)|  | 
-
-### Return type
-
-[**LoginTokenRsp**](LoginTokenRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **passKeyAppendFinish**
-> PassKeyAppendFinishRsp passKeyAppendFinish(passKeyFinishReq)
-
-
-
-Performs passkey append finish
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final passKeyFinishReq = PassKeyFinishReq(); // PassKeyFinishReq | 
-
-try {
-    final result = api_instance.passKeyAppendFinish(passKeyFinishReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->passKeyAppendFinish: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **passKeyFinishReq** | [**PassKeyFinishReq**](PassKeyFinishReq.md)|  | 
-
-### Return type
-
-[**PassKeyAppendFinishRsp**](PassKeyAppendFinishRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **passKeyAppendStart**
-> PassKeyStartRsp passKeyAppendStart(emptyReq)
-
-
-
-Performs passkey append start
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final emptyReq = EmptyReq(); // EmptyReq | 
-
-try {
-    final result = api_instance.passKeyAppendStart(emptyReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->passKeyAppendStart: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **emptyReq** | [**EmptyReq**](EmptyReq.md)|  | 
-
-### Return type
-
-[**PassKeyStartRsp**](PassKeyStartRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **passKeyAssociateStart**
-> PassKeyStartRsp passKeyAssociateStart(passKeyAssociateStartReq)
-
-
-
-Performs passkey associate start
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final passKeyAssociateStartReq = PassKeyAssociateStartReq(); // PassKeyAssociateStartReq | 
-
-try {
-    final result = api_instance.passKeyAssociateStart(passKeyAssociateStartReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->passKeyAssociateStart: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **passKeyAssociateStartReq** | [**PassKeyAssociateStartReq**](PassKeyAssociateStartReq.md)|  | 
-
-### Return type
-
-[**PassKeyStartRsp**](PassKeyStartRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **passKeyCredentialExists**
-> PassKeyCredentialExistsRsp passKeyCredentialExists(passKeyCredentialExistsReq)
-
-
-
-Checks if active passkey credential exists for provided user and device
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final passKeyCredentialExistsReq = PassKeyCredentialExistsReq(); // PassKeyCredentialExistsReq | 
-
-try {
-    final result = api_instance.passKeyCredentialExists(passKeyCredentialExistsReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->passKeyCredentialExists: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **passKeyCredentialExistsReq** | [**PassKeyCredentialExistsReq**](PassKeyCredentialExistsReq.md)|  | 
-
-### Return type
-
-[**PassKeyCredentialExistsRsp**](PassKeyCredentialExistsRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **passKeyLoginFinish**
-> PassKeyLoginFinishRsp passKeyLoginFinish(passKeyFinishReq)
-
-
-
-Performs passkey login finish
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final passKeyFinishReq = PassKeyFinishReq(); // PassKeyFinishReq | 
-
-try {
-    final result = api_instance.passKeyLoginFinish(passKeyFinishReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->passKeyLoginFinish: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **passKeyFinishReq** | [**PassKeyFinishReq**](PassKeyFinishReq.md)|  | 
-
-### Return type
-
-[**PassKeyLoginFinishRsp**](PassKeyLoginFinishRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **passKeyLoginStart**
-> PassKeyStartRsp passKeyLoginStart(passKeyLoginStartReq)
-
-
-
-Performs passkey login start
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final passKeyLoginStartReq = PassKeyLoginStartReq(); // PassKeyLoginStartReq | 
-
-try {
-    final result = api_instance.passKeyLoginStart(passKeyLoginStartReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->passKeyLoginStart: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **passKeyLoginStartReq** | [**PassKeyLoginStartReq**](PassKeyLoginStartReq.md)|  | 
-
-### Return type
-
-[**PassKeyStartRsp**](PassKeyStartRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **passKeyMediationStart**
-> PassKeyMediationStartRsp passKeyMediationStart(passKeyMediationStartReq)
-
-
-
-Performs passkey mediation start
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final passKeyMediationStartReq = PassKeyMediationStartReq(); // PassKeyMediationStartReq | 
-
-try {
-    final result = api_instance.passKeyMediationStart(passKeyMediationStartReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->passKeyMediationStart: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **passKeyMediationStartReq** | [**PassKeyMediationStartReq**](PassKeyMediationStartReq.md)|  | 
-
-### Return type
-
-[**PassKeyMediationStartRsp**](PassKeyMediationStartRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **passKeyRegisterFinish**
-> PassKeyRegisterFinishRsp passKeyRegisterFinish(passKeyFinishReq)
-
-
-
-Performs passkey register finish
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final passKeyFinishReq = PassKeyFinishReq(); // PassKeyFinishReq | 
-
-try {
-    final result = api_instance.passKeyRegisterFinish(passKeyFinishReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->passKeyRegisterFinish: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **passKeyFinishReq** | [**PassKeyFinishReq**](PassKeyFinishReq.md)|  | 
-
-### Return type
-
-[**PassKeyRegisterFinishRsp**](PassKeyRegisterFinishRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **passKeyRegisterStart**
-> PassKeyStartRsp passKeyRegisterStart(passKeyRegisterStartReq)
-
-
-
-Performs passkey register start
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final passKeyRegisterStartReq = PassKeyRegisterStartReq(); // PassKeyRegisterStartReq | 
-
-try {
-    final result = api_instance.passKeyRegisterStart(passKeyRegisterStartReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->passKeyRegisterStart: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **passKeyRegisterStartReq** | [**PassKeyRegisterStartReq**](PassKeyRegisterStartReq.md)|  | 
-
-### Return type
-
-[**PassKeyStartRsp**](PassKeyStartRsp.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth), [projectID](../README.md#projectID)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **password**
-> PasswordVerifyRsp password(passwordVerifyReq)
-
-
-
-Performs password verify
-
-### Example
-```dart
-import 'package:corbado_api/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-// TODO Configure API key authorization: projectID
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKey = 'YOUR_API_KEY';
-// uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-//defaultApiClient.getAuthentication<ApiKeyAuth>('projectID').apiKeyPrefix = 'Bearer';
-
-final api_instance = UsersApi();
-final passwordVerifyReq = PasswordVerifyReq(); // PasswordVerifyReq | 
-
-try {
-    final result = api_instance.password(passwordVerifyReq);
-    print(result);
-} catch (e) {
-    print('Exception when calling UsersApi->password: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **passwordVerifyReq** | [**PasswordVerifyReq**](PasswordVerifyReq.md)|  | 
-
-### Return type
-
-[**PasswordVerifyRsp**](PasswordVerifyRsp.md)
+[**GenericRsp**](GenericRsp.md)
 
 ### Authorization
 

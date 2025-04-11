@@ -32,7 +32,13 @@ class PasskeysIOS extends PasskeysPlatform {
       request.challenge,
       relyingPartyArg,
       userArg,
-      request.excludeCredentials.map((e) => e.id).toList(),
+      request.excludeCredentials
+          .map((e) =>
+              CredentialType(type: e.type, id: e.id, transports: e.transports))
+          .toList(),
+      request.pubKeyCredParams?.map((e) => e.alg).toList() ?? [],
+      request.authSelectionType.authenticatorAttachment != 'cross-platform',
+      request.authSelectionType.authenticatorAttachment != 'platform',
     );
 
     return RegisterResponseType(
@@ -40,6 +46,7 @@ class PasskeysIOS extends PasskeysPlatform {
       rawId: r.rawId,
       clientDataJSON: r.clientDataJSON,
       attestationObject: r.attestationObject,
+      transports: r.transports.whereType<String>().toList(),
     );
   }
 
@@ -56,7 +63,12 @@ class PasskeysIOS extends PasskeysPlatform {
       request.relyingPartyId,
       request.challenge,
       conditionalUI,
-      request.allowCredentials?.map((e) => e.id).toList() ?? [],
+      request.allowCredentials
+              ?.map((e) => CredentialType(
+                  type: e.type, id: e.id, transports: e.transports))
+              .toList() ??
+          [],
+      request.preferImmediatelyAvailableCredentials,
     );
 
     return AuthenticateResponseType(
@@ -96,5 +108,17 @@ class PasskeysIOS extends PasskeysPlatform {
         authenticatorData: r.authenticatorData,
         signature: r.signature,
         userHandle: r.userHandle);
+  }
+
+  @override
+  Future<AvailabilityTypeIOS> getAvailability() async {
+    final availability = await _api.canAuthenticate();
+    final hasBiometrics = await _api.hasBiometrics();
+
+    return AvailabilityTypeIOS(
+      hasPasskeySupport: availability,
+      hasBiometrics: hasBiometrics,
+      isNative: true,
+    );
   }
 }

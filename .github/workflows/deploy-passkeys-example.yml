@@ -1,0 +1,53 @@
+name: Deploy passkeys example to Vercel
+env:
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_PASSKEYS_EXAMPLE }}
+  BRANCH_NAME_RAW: ${{ github.head_ref || github.ref_name }}
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  release:
+    types: [ published ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          # Pin to a Flutter version that your app supports
+          # or omit to use the default stable version
+          flutter-version: "3.27.4"
+
+      - name: Normalize branch name
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "BRANCH_NAME=$(echo $BRANCH_NAME_RAW | tr '/_' '-')" >> "$GITHUB_ENV"
+        shell: bash
+
+      - name: Deploy Next example to Vercel (Preview for PRs)
+        if: github.event_name == 'pull_request'
+        run: |
+          cd packages/passkeys/passkeys/example
+          npx vercel pull --token $VERCEL_TOKEN --scope $VERCEL_ORG_ID
+          npx vercel build --token $VERCEL_TOKEN --scope $VERCEL_ORG_ID
+          url="$(npx vercel deploy --prebuilt -t ${{ secrets.VERCEL_TOKEN }})"
+          npx vercel alias -S corbado -t ${{ secrets.VERCEL_TOKEN }} "$url" $BRANCH_NAME.passkeys.flutter.corbado.io
+
+      - name: Deploy Next example to Vercel (Production on main)
+        if: github.event_name != 'pull_request'
+        run: |
+          cd packages/passkeys/passkeys/example
+          npx vercel pull -t $VERCEL_TOKEN
+          npx vercel build --prod -t $VERCEL_TOKEN
+          npx vercel deploy --prebuilt --prod -t $VERCEL_TOKEN

@@ -1,3 +1,38 @@
+## 2.7.1
+* Fixed a bug where `hybrid` transports causes login to fail. (Web)
+
+## 2.7.0
+* Fixed Exception when trying to register while `authenticatorAttachment` is null on Safari or IOS device. (Web)
+* Added support for external security keys (Yubikey) on iOS. (iOS)
+* Added handling for timeouts in `authenticate` and `register` methods. (Android)
+
+## 2.6.0
+* Added `transports` to RegistrationResponse
+* Fixes `hasPasskeySupport` in `getAvailability` (Android)
+
+## 2.5.0
+* Introduced `getAvailability` API: Enables checking for passkey support across platforms.
+* Updated `androidx.credentials:credentials` to version 1.3.0 for improved compatibility. (Android)
+* Resolved an issue on iOS 16.0+ where a `DeviceNotSupported` exception was incorrectly thrown on supported devices. (iOS)
+* Added `hasPasskeySupport` to `AvailabilityType` to verify passkey support on web platforms. (Web)
+
+## 2.4.0
+* Added support for WebAssembly (Wasm) (Web)
+* Added handling for `CreateCredentialNoCreateOptionException` when no viable creation options were found (Android)
+
+## 2.3.0
+* Improved fallback handling in `PasskeyAuthenticator.authenticate`.
+* Added support for `preferImmediatelyAvailableCredentials` on Android.
+* Fixed `requireResidentKey` mapping for 1Password compatibility.
+
+## 2.2.0
+* Added support for AGP 8.0 and newer (Android)
+* Resolves a crash issue on iOS devices running versions below 16.0. (iOS)
+
+## 2.1.0
+* Added support for preferImmediatelyAvailableCredentials (Android and iOS)
+* Added getAvailability (Flutter web only)
+
 ## 2.0.9
 * Bump version of passkeys_web and corbado_frontend_api_client
 * Removed dependencies to openapi_generator_annotations and openapi_generator
